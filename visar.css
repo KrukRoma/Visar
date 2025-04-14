@@ -1,4 +1,4 @@
-/* Base Styles */
+/* Базові стилі */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
 
 :root {
@@ -67,13 +67,13 @@ ul {
   padding: 0 15px;
 }
 
-/* Header Styles */
+/* Стилі для хедера */
 header {
   position: fixed;
   top: 0;
   left: 0;
   width: 100%;
-  background-color: rgba(0, 0, 0, 0.9); /* Increased opacity for better visibility */
+  background-color: rgba(0, 0, 0, 0.9);
   z-index: 1000;
   padding: 15px 0;
   transition: var(--transition);
@@ -114,14 +114,153 @@ nav {
   font-size: 14px;
   font-weight: 500;
   transition: var(--transition);
-  padding: 5px 0;
+  padding: 10px 15px;
   white-space: nowrap;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  text-align: center;
 }
 
 .main-menu li a:hover {
   color: var(--primary-color);
 }
 
+/* Стилі для випадаючого меню */
+.dropdown {
+  position: relative;
+}
+
+.dropdown-toggle {
+  color: var(--light-color) !important;
+  font-weight: 600;
+}
+
+.dropdown-toggle i {
+  transition: transform 0.3s ease;
+}
+
+.dropdown:hover .dropdown-toggle i {
+  transform: rotate(180deg);
+}
+
+.dropdown-toggle:hover {
+  color: var(--primary-color) !important;
+}
+
+.dropdown-menu {
+  position: absolute;
+  top: 100%;
+  left: 50%;
+  transform: translateX(-50%) translateY(10px);
+  width: 280px;
+  background-color: var(--dark-color);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+  z-index: 1000;
+  padding: 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.dropdown:hover .dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(-50%) translateY(0);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0s;
+}
+
+.dropdown-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px; /* Фіксована висота для всіх елементів */
+  padding: 0 20px;
+  color: var(--light-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  position: relative;
+  text-align: center;
+  font-weight: 500;
+}
+
+.dropdown-item:last-child {
+  border-bottom: none;
+}
+
+.dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--primary-color);
+}
+
+.dropdown-item.has-submenu {
+  position: relative;
+}
+
+.submenu-toggle {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 0 20px;
+  border-bottom: none;
+}
+
+.submenu-toggle i {
+  margin-left: 10px;
+}
+
+.submenu {
+  position: absolute;
+  top: 0;
+  left: 100%;
+  width: 280px;
+  background-color: var(--dark-color);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+  opacity: 0;
+  visibility: hidden;
+  transform: translateX(-10px);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
+  z-index: 1001;
+  padding: 0;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.dropdown-item.has-submenu:hover .submenu {
+  opacity: 1;
+  visibility: visible;
+  transform: translateX(0);
+  transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0s;
+}
+
+.submenu a {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 20px;
+  color: var(--light-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: background-color 0.3s ease, color 0.3s ease;
+  text-align: center;
+  font-weight: 500;
+}
+
+.submenu a:last-child {
+  border-bottom: none;
+}
+
+.submenu a:hover {
+  background-color: rgba(255, 255, 255, 0.05);
+  color: var(--primary-color);
+}
+
+/* Стилі для контактної інформації */
 .contact-info {
   display: flex;
   align-items: center;
@@ -161,7 +300,7 @@ nav {
   border-color: var(--primary-color);
 }
 
-/* Mobile Menu */
+/* Мобільне меню */
 .mobile-menu-toggle {
   display: none;
   background: none;
@@ -208,17 +347,63 @@ nav {
 .mobile-menu-items {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 10px;
   margin-bottom: 30px;
 }
 
 .mobile-menu-items li a {
   color: var(--light-color);
-  font-size: 18px;
+  font-size: 16px;
   font-weight: 500;
   display: block;
   padding: 10px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.mobile-dropdown-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-dropdown-menu {
+  display: none;
+  padding-left: 15px;
+  margin-top: 10px;
+}
+
+.mobile-dropdown.active .mobile-dropdown-menu {
+  display: block;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.mobile-dropdown-toggle i {
+  transition: transform 0.3s ease;
+}
+
+.mobile-dropdown.active .mobile-dropdown-toggle i {
+  transform: rotate(180deg);
+}
+
+.mobile-submenu-toggle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.mobile-submenu {
+  display: none;
+  padding-left: 15px;
+  margin-top: 10px;
+}
+
+.mobile-dropdown-item.has-submenu.active .mobile-submenu {
+  display: block;
+  animation: fadeIn 0.3s ease forwards;
+}
+
+.mobile-dropdown-item.has-submenu.active .mobile-submenu-toggle i {
+  transform: rotate(180deg);
 }
 
 .mobile-contact-info {
@@ -1035,4 +1220,27 @@ footer {
 /* Стилі для кнопки переключення каталогу */
 .btn-full-catalog.active {
   background-color: #cc0000;
+}
+
+/* Анімації для випадаючого меню */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInRight {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
 }

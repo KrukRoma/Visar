@@ -135,14 +135,21 @@ nav {
 .dropdown-toggle {
   color: var(--light-color) !important;
   font-weight: 600;
+  text-decoration: none !important;
 }
 
+/* Видаляємо поворот стрілки */
 .dropdown-toggle i {
-  transition: transform 0.3s ease;
+  transition: none;
 }
 
 .dropdown:hover .dropdown-toggle i {
-  transform: rotate(180deg);
+  transform: none;
+}
+
+/* Змінюємо колір тексту "Каталог товарів" при наведенні на підменю */
+.dropdown:hover .dropdown-toggle {
+  color: var(--primary-color) !important;
 }
 
 .dropdown-toggle:hover {
@@ -154,16 +161,15 @@ nav {
   top: 100%;
   left: 50%;
   transform: translateX(-50%) translateY(10px);
-  width: 280px;
+  width: 250px;
   background-color: var(--dark-color);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   opacity: 0;
   visibility: hidden;
   transition: opacity 0.3s ease, transform 0.3s ease, visibility 0s linear 0.3s;
   z-index: 1000;
   padding: 0;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
 }
 
 .dropdown:hover .dropdown-menu {
@@ -176,14 +182,14 @@ nav {
 .dropdown-item {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 40px; /* Фіксована висота для всіх елементів */
+  justify-content: space-between;
+  height: 50px;
   padding: 0 20px;
   color: var(--light-color);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: none;
   transition: background-color 0.3s ease, color 0.3s ease;
   position: relative;
-  text-align: center;
+  text-align: left;
   font-weight: 500;
 }
 
@@ -192,7 +198,7 @@ nav {
 }
 
 .dropdown-item:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: transparent;
   color: var(--primary-color);
 }
 
@@ -202,11 +208,11 @@ nav {
 
 .submenu-toggle {
   display: flex;
-  justify-content: center;
+  justify-content: space-between;
   align-items: center;
   width: 100%;
   height: 100%;
-  padding: 0 20px;
+  padding: 0;
   border-bottom: none;
 }
 
@@ -218,9 +224,9 @@ nav {
   position: absolute;
   top: 0;
   left: 100%;
-  width: 280px;
+  width: 250px;
   background-color: var(--dark-color);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  border: none;
   opacity: 0;
   visibility: hidden;
   transform: translateX(-10px);
@@ -228,7 +234,6 @@ nav {
   z-index: 1001;
   padding: 0;
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  border-radius: 4px;
 }
 
 .dropdown-item.has-submenu:hover .submenu {
@@ -241,13 +246,12 @@ nav {
 .submenu a {
   display: flex;
   align-items: center;
-  justify-content: center;
-  height: 40px;
+  height: 50px;
   padding: 0 20px;
   color: var(--light-color);
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  border-bottom: none;
   transition: background-color 0.3s ease, color 0.3s ease;
-  text-align: center;
+  text-align: left;
   font-weight: 500;
 }
 
@@ -256,7 +260,57 @@ nav {
 }
 
 .submenu a:hover {
-  background-color: rgba(255, 255, 255, 0.05);
+  background-color: transparent;
+  color: var(--primary-color);
+}
+
+/* Прибираємо всі можливі границі та лінії */
+.dropdown-item,
+.submenu a {
+  border: none;
+  border-bottom: none;
+  border-top: none;
+  box-shadow: none;
+}
+
+.dropdown-menu,
+.submenu {
+  border: none;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+}
+
+/* Додаткове правило для видалення будь-яких ліній */
+.dropdown-item::before,
+.dropdown-item::after,
+.submenu a::before,
+.submenu a::after {
+  display: none;
+  content: none;
+}
+
+/* Переконаємося, що немає ніяких додаткових стилів, які могли б створювати лінії */
+.dropdown-item.has-submenu::after,
+.dropdown-item.has-submenu::before {
+  display: none;
+  content: none;
+}
+
+/* Прибираємо підкреслення для всіх посилань у меню */
+.main-menu li a,
+.dropdown-toggle,
+.dropdown-item a,
+.submenu a {
+  text-decoration: none !important;
+}
+
+/* Змінюємо колір тексту батьківського пункту при наведенні на підменю */
+.dropdown-item.has-submenu:hover .submenu-toggle {
+  color: var(--primary-color);
+}
+
+/* Коли курсор знаходиться в підменю, батьківський пункт залишається червоним */
+.dropdown-item.has-submenu .submenu:hover + .submenu-toggle,
+.dropdown-item.has-submenu:hover .submenu-toggle {
   color: var(--primary-color);
 }
 

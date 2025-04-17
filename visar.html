@@ -20,24 +20,8 @@
                     <li><a href="#">Контакти</a></li>
                     <li class="dropdown">
                         <a href="#product-slider" class="catalog-link dropdown-toggle">Каталог товарів <i class="fas fa-chevron-down"></i></a>
-                        <div class="dropdown-menu">
-                            <div class="dropdown-item has-submenu">
-                                <a href="#" class="submenu-toggle">PPF <i class="fas fa-chevron-right"></i></a>
-                                <div class="submenu">
-                                    <a href="#">КОЛЬОРОВА PPF</a>
-                                    <a href="#">ПРОЗОРА PPF</a>
-                                </div>
-                            </div>
-                            <a href="#" class="dropdown-item">ВІКОННА ПЛІВКА</a>
-                            <div class="dropdown-item has-submenu">
-                                <a href="#" class="submenu-toggle">ВІНІЛОВА ОБГОРТКА <i class="fas fa-chevron-right"></i></a>
-                                <div class="submenu">
-                                    <a href="#">МЕТАЛІЧНІ ОБГОРТКИ</a>
-                                    <a href="#">ГЛЯНЦЕВІ ОБГОРТКИ</a>
-                                    <a href="#">МАТОВІ ОБГОРТКИ</a>
-                                    <a href="#">КАРБОНОВЕ ВОЛОКНО</a>
-                                </div>
-                            </div>
+                        <div class="dropdown-menu" id="dynamic-catalog">
+                            <!-- Категорії будуть завантажені динамічно -->
                         </div>
                     </li>
                 </ul>
@@ -69,31 +53,8 @@
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <ul class="mobile-menu-items">
-            <li><a href="#why-need" class="info-link">Корисна інформація</a></li>
-            <li><a href="#">Контакти</a></li>
-            <li class="mobile-dropdown">
-                <a href="#" class="mobile-dropdown-toggle">Каталог товарів <i class="fas fa-chevron-down"></i></a>
-                <div class="mobile-dropdown-menu">
-                    <div class="mobile-dropdown-item has-submenu">
-                        <a href="#" class="mobile-submenu-toggle">PPF <i class="fas fa-chevron-down"></i></a>
-                        <div class="mobile-submenu">
-                            <a href="#">КОЛЬОРОВА PPF</a>
-                            <a href="#">ПРОЗОРА PPF</a>
-                        </div>
-                    </div>
-                    <a href="#" class="mobile-dropdown-item">ВІКОННА ПЛІВКА</a>
-                    <div class="mobile-dropdown-item has-submenu">
-                        <a href="#" class="mobile-submenu-toggle">ВІНІЛОВА ОБГОРТКА <i class="fas fa-chevron-down"></i></a>
-                        <div class="mobile-submenu">
-                            <a href="#">МЕТАЛІЧНІ ОБГОРТКИ</a>
-                            <a href="#">ГЛЯНЦЕВІ ОБГОРТКИ</a>
-                            <a href="#">МАТОВІ ОБГОРТКИ</a>
-                            <a href="#">КАРБОНОВЕ ВОЛОКНО</a>
-                        </div>
-                    </div>
-                </div>
-            </li>
+        <ul class="mobile-menu-items" id="mobile-dynamic-catalog">
+            <!-- Категорії для мобільного меню будуть завантажені динамічно -->
         </ul>
         <div class="mobile-contact-info">
             <div class="phone">

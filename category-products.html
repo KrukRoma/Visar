@@ -28,19 +28,21 @@
         .products-grid {
             display: grid;
             grid-template-columns: repeat(1, 1fr);
-            gap: 20px;
+            gap: 30px; /* Збільшуємо відстань між продуктами */
             margin-top: 30px;
         }
         
         @media (min-width: 576px) {
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
+                gap: 30px; /* Збільшуємо відстань між продуктами */
             }
         }
         
         @media (min-width: 992px) {
             .products-grid {
                 grid-template-columns: repeat(3, 1fr);
+                gap: 30px; /* Збільшуємо відстань між продуктами */
             }
         }
         
@@ -152,6 +154,66 @@
             color: white;
             margin: 5px 0;
         }
+        
+        /* Стилі для пагінації */
+        .pagination {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 40px 0 20px;
+            flex-wrap: wrap;
+        }
+        
+        .pagination-item {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-item:hover {
+            background-color: #f5f5f5;
+        }
+        
+        .pagination-item.active {
+            background-color: #c1121f;
+            color: white;
+            border-color: #c1121f;
+        }
+        
+        .pagination-dots {
+            margin: 0 5px;
+            color: #333;
+        }
+        
+        .pagination-arrow {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            width: 40px;
+            height: 40px;
+            margin: 0 5px;
+            border: 1px solid #ddd;
+            color: #333;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .pagination-arrow:hover {
+            background-color: #f5f5f5;
+        }
+        
+        
     </style>
 </head>
 <body>
@@ -222,6 +284,11 @@
             <div class="products-grid" id="products-grid">
                 <!-- Товари будуть вставлені через JavaScript -->
             </div>
+            
+            <!-- Додаємо пагінацію -->
+            <div class="pagination" id="pagination">
+                <!-- Пагінація буде вставлена через JavaScript -->
+            </div>
         </div>
     </section>
 
@@ -253,10 +320,16 @@
         document.addEventListener("DOMContentLoaded", async () => {
             const categoryTitle = document.getElementById("category-title");
             const productsGrid = document.getElementById("products-grid");
+            const paginationContainer = document.getElementById("pagination");
+            
+            // Завантаження категорій для меню
+            loadCategories();
     
             const urlParams = new URLSearchParams(window.location.search);
             const categoryId = urlParams.get("categoryId");
             const subcategoryId = urlParams.get("subcategoryId");
+            const page = parseInt(urlParams.get("page")) || 1;
+            const productsPerPage = 21; // Максимум 21 продукт на сторінці
     
             if (!categoryId && !subcategoryId) {
                 productsGrid.innerHTML = '<p class="error-message">Категорію або підкатегорію не вказано.</p>';
@@ -313,8 +386,21 @@
                     productsGrid.innerHTML = '<p class="error-message">Товарів у цій категорії немає.</p>';
                     return;
                 }
+                
+                // Розрахунок пагінації
+                const totalProducts = filteredProducts.length;
+                const totalPages = Math.ceil(totalProducts / productsPerPage);
+                
+                // Отримуємо продукти для поточної сторінки
+                const startIndex = (page - 1) * productsPerPage;
+                const endIndex = Math.min(startIndex + productsPerPage, totalProducts);
+                const currentPageProducts = filteredProducts.slice(startIndex, endIndex);
+                
+                // Очищаємо контейнер продуктів
+                productsGrid.innerHTML = '';
     
-                filteredProducts.forEach(product => {
+                // Додаємо продукти на сторінку
+                currentPageProducts.forEach(product => {
                     const productCard = document.createElement("div");
                     productCard.classList.add("product-card");
                     productCard.dataset.productId = product.id;
@@ -358,6 +444,9 @@
                     productCard.appendChild(productInfo);
                     productsGrid.appendChild(productCard);
                 });
+                
+                // Створюємо пагінацію
+                createPagination(page, totalPages, categoryId, subcategoryId);
     
                 document.querySelectorAll(".product-card").forEach(card => {
                     card.addEventListener("click", (e) => {
@@ -373,6 +462,159 @@
                 productsGrid.innerHTML = '<p class="error-message">Не вдалося завантажити товари. Спробуйте пізніше.</p>';
             }
         });
+        
+        // Функція для створення пагінації
+        function createPagination(currentPage, totalPages, categoryId, subcategoryId) {
+            const paginationContainer = document.getElementById("pagination");
+            paginationContainer.innerHTML = '';
+            
+            if (totalPages <= 1) {
+                return; // Не показуємо пагінацію, якщо є лише одна сторінка
+            }
+            
+            // Функція для створення URL сторінки
+            function getPageUrl(page) {
+                const url = new URL(window.location.href);
+                url.searchParams.set('page', page);
+                return url.toString();
+            }
+            
+            // Функція для створення елемента пагінації
+            function createPaginationItem(page, isActive = false) {
+                const item = document.createElement('a');
+                item.href = getPageUrl(page);
+                item.textContent = page;
+                item.classList.add('pagination-item');
+                if (isActive) {
+                    item.classList.add('active');
+                }
+                return item;
+            }
+            
+            // Додаємо кнопку "Попередня"
+            if (currentPage > 1) {
+                const prevButton = document.createElement('a');
+                prevButton.href = getPageUrl(currentPage - 1);
+                prevButton.classList.add('pagination-arrow');
+                prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
+                paginationContainer.appendChild(prevButton);
+            }
+            
+            // Визначаємо, які сторінки показувати
+            let startPage = Math.max(1, currentPage - 2);
+            let endPage = Math.min(totalPages, currentPage + 2);
+            
+            // Забезпечуємо, щоб було показано не менше 5 сторінок (якщо вони є)
+            if (endPage - startPage < 4 && totalPages > 5) {
+                if (currentPage < totalPages / 2) {
+                    endPage = Math.min(startPage + 4, totalPages);
+                } else {
+                    startPage = Math.max(endPage - 4, 1);
+                }
+            }
+            
+            // Додаємо першу сторінку
+            if (startPage > 1) {
+                paginationContainer.appendChild(createPaginationItem(1));
+                
+                // Додаємо три крапки, якщо потрібно
+                if (startPage > 2) {
+                    const dots = document.createElement('span');
+                    dots.textContent = '...';
+                    dots.classList.add('pagination-dots');
+                    paginationContainer.appendChild(dots);
+                }
+            }
+            
+            // Додаємо сторінки від startPage до endPage
+            for (let i = startPage; i <= endPage; i++) {
+                paginationContainer.appendChild(createPaginationItem(i, i === currentPage));
+            }
+            
+            // Додаємо останню сторінку
+            if (endPage < totalPages) {
+                // Додаємо три крапки, якщо потрібно
+                if (endPage < totalPages - 1) {
+                    const dots = document.createElement('span');
+                    dots.textContent = '...';
+                    dots.classList.add('pagination-dots');
+                    paginationContainer.appendChild(dots);
+                }
+                
+                paginationContainer.appendChild(createPaginationItem(totalPages));
+            }
+            
+            // Додаємо кнопку "Наступна"
+            if (currentPage < totalPages) {
+                const nextButton = document.createElement('a');
+                nextButton.href = getPageUrl(currentPage + 1);
+                nextButton.classList.add('pagination-arrow');
+                nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
+                paginationContainer.appendChild(nextButton);
+            }
+        }
+        
+        // Функція для завантаження категорій
+        async function loadCategories() {
+            try {
+                const response = await fetch("http://localhost:3000/api/categories");
+                if (!response.ok) {
+                    throw new Error(`HTTP помилка: ${response.status}`);
+                }
+                
+                const categories = await response.json();
+                const dynamicCatalog = document.getElementById("dynamic-catalog");
+                const mobileDynamicCatalog = document.getElementById("mobile-dynamic-catalog");
+                
+                if (!dynamicCatalog || !mobileDynamicCatalog) {
+                    console.error("Не знайдено контейнери для каталогу");
+                    return;
+                }
+                
+                // Очищаємо контейнери
+                dynamicCatalog.innerHTML = '';
+                mobileDynamicCatalog.innerHTML = '';
+                
+                // Додаємо категорії до десктопного меню
+                categories.forEach(category => {
+                    const categoryLink = document.createElement("a");
+                    categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                    categoryLink.textContent = category.name;
+                    dynamicCatalog.appendChild(categoryLink);
+                    
+                    // Додаємо категорії до мобільного меню
+                    const mobileItem = document.createElement("li");
+                    const mobileCategoryLink = document.createElement("a");
+                    mobileCategoryLink.href = `category-products.html?categoryId=${category.id}`;
+                    mobileCategoryLink.textContent = category.name;
+                    mobileItem.appendChild(mobileCategoryLink);
+                    mobileDynamicCatalog.appendChild(mobileItem);
+                    
+                    // Додаємо підкатегорії, якщо вони є
+                    if (category.subcategories && category.subcategories.length > 0) {
+                        category.subcategories.forEach(subcategory => {
+                            const subcategoryLink = document.createElement("a");
+                            subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
+                            subcategoryLink.textContent = `- ${subcategory.name}`;
+                            subcategoryLink.style.paddingLeft = "20px";
+                            dynamicCatalog.appendChild(subcategoryLink);
+                            
+                            // Додаємо підкатегорії до мобільного меню
+                            const mobileSubItem = document.createElement("li");
+                            const mobileSubcategoryLink = document.createElement("a");
+                            mobileSubcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
+                            mobileSubcategoryLink.textContent = `- ${subcategory.name}`;
+                            mobileSubcategoryLink.style.paddingLeft = "20px";
+                            mobileSubItem.appendChild(mobileSubcategoryLink);
+                            mobileDynamicCatalog.appendChild(mobileSubItem);
+                        });
+                    }
+                });
+                
+            } catch (error) {
+                console.error("Помилка завантаження категорій:", error);
+            }
+        }
     </script>
 </body>
 </html>

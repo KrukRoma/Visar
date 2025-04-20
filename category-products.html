@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Товари категорії</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Montserrat', sans-serif;
+            color: #333;
+            line-height: 1.6;
+            background-color: #f9f9f9;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        header {
+            background-color: #fff;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+
+        header .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px 20px;
+        }
+
+        .logo img {
+            height: 50px;
+        }
+
+        .main-menu {
+            display: flex;
+            list-style: none;
+            gap: 30px;
+        }
+
+        .main-menu li {
+            position: relative;
+        }
+
+        .main-menu a {
+            text-decoration: none;
+            color: #333;
+            font-weight: 500;
+            font-size: 16px;
+            transition: color 0.3s ease;
+        }
+
+        .main-menu a:hover {
+            color: #ff4d4f;
+        }
+
+        .contact-info {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .phone a {
+            color: #333;
+            text-decoration: none;
+            font-weight: 500;
+        }
+
+        .social-icons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .social-icons a {
+            color: #333;
+            font-size: 20px;
+            transition: color 0.3s ease;
+        }
+
+        .social-icons a:hover {
+            color: #ff4d4f;
+        }
+
+        .mobile-menu-toggle {
+            display: none;
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .main-menu,
+            .contact-info {
+                display: none;
+            }
+
+            .mobile-menu-toggle {
+                display: block;
+            }
+        }
+
+        .category-products-section {
+            padding: 50px 0;
+        }
+
+        .category-title {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .products-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 20px;
+        }
+
+        .product-card {
+            background-color: #fff;
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+            cursor: pointer;
+        }
+
+        .product-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .product-info {
+            padding: 15px;
+            text-align: center;
+        }
+
+        .product-info h3 {
+            font-size: 18px;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .product-price {
+            font-size: 16px;
+            color: #ff4d4f;
+            margin-bottom: 10px;
+        }
+
+        .btn-view-cart {
+            display: inline-block;
+            padding: 8px 15px;
+            background-color: #ff4d4f;
+            color: #fff;
+            text-decoration: none;
+            font-weight: 500;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .btn-view-cart:hover {
+            background-color: #e04345;
+        }
+
+        .error-message {
+            text-align: center;
+            font-size: 18px;
+            color: #ff4d4f;
+            padding: 50px 0;
+        }
+
+        @media (max-width: 768px) {
+            .products-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="logo.png" alt="Logo">
+            </div>
+            <ul class="main-menu">
+                <li><a href="visar.html">Головна</a></li>
+                <li><a href="#">Каталог</a></li>
+                <li><a href="#">Послуги</a></li>
+                <li><a href="#">Контакти</a></li>
+            </ul>
+            <div class="contact-info">
+                <div class="phone">
+                    <i class="fas fa-phone-alt"></i>
+                    <a href="tel:+380123456789">+380 123 456 789</a>
+                </div>
+                <div class="social-icons">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-youtube"></i></a>
+                </div>
+            </div>
+            <button class="mobile-menu-toggle">
+                <i class="fas fa-bars"></i>
+            </button>
+        </div>
+    </header>
+
+    <section class="category-products-section">
+        <div class="container">
+            <h1 class="category-title" id="category-title">Товари категорії</h1>
+            <div class="products-grid" id="products-grid">
+                <!-- Товари будуть вставлені через JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", async () => {
+            const categoryTitle = document.getElementById("category-title");
+            const productsGrid = document.getElementById("products-grid");
+    
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryId = urlParams.get("categoryId");
+            const subcategoryId = urlParams.get("subcategoryId");
+    
+            if (!categoryId && !subcategoryId) {
+                productsGrid.innerHTML = '<p class="error-message">Категорію або підкатегорію не вказано.</p>';
+                return;
+            }
+    
+            try {
+                const categoriesResponse = await fetch("http://localhost:3000/api/categories");
+                if (!categoriesResponse.ok) {
+                    throw new Error(`HTTP помилка (категорії): ${categoriesResponse.status}`);
+                }
+                const categories = await categoriesResponse.json();
+    
+                let categoryName = "Товари";
+                let filteredProducts = [];
+    
+                const productsResponse = await fetch("http://localhost:3000/api/products");
+                if (!productsResponse.ok) {
+                    throw new Error(`HTTP помилка (продукти): ${productsResponse.status}`);
+                }
+                const allProducts = await productsResponse.json();
+    
+                if (categoryId) {
+                    const category = categories.find(cat => cat.id === parseInt(categoryId));
+                    if (!category) {
+                        productsGrid.innerHTML = '<p class="error-message">Категорію не знайдено.</p>';
+                        return;
+                    }
+                    categoryName = category.name;
+                    filteredProducts = allProducts.filter(product =>
+                        product.category && parseInt(product.category.id) === parseInt(categoryId)
+                    );
+                } else if (subcategoryId) {
+                    let subcategory = null;
+                    for (const category of categories) {
+                        if (category.subcategories) {
+                            subcategory = category.subcategories.find(sub => sub.id === parseInt(subcategoryId));
+                            if (subcategory) break;
+                        }
+                    }
+                    if (!subcategory) {
+                        productsGrid.innerHTML = '<p class="error-message">Підкатегорію не знайдено.</p>';
+                        return;
+                    }
+                    categoryName = subcategory.name;
+                    filteredProducts = allProducts.filter(product =>
+                        product.subcategory && parseInt(product.subcategory.id) === parseInt(subcategoryId)
+                    );
+                }
+    
+                categoryTitle.textContent = categoryName;
+    
+                if (filteredProducts.length === 0) {
+                    productsGrid.innerHTML = '<p class="error-message">Товарів у цій категорії немає.</p>';
+                    return;
+                }
+    
+                filteredProducts.forEach(product => {
+                    const productCard = document.createElement("div");
+                    productCard.classList.add("product-card");
+                    productCard.dataset.productId = product.id;
+    
+                    const img = document.createElement("img");
+                    img.src = product.photo;
+                    img.alt = product.name;
+                    img.classList.add("product-image");
+    
+                    const productInfo = document.createElement("div");
+                    productInfo.classList.add("product-info");
+    
+                    const h3 = document.createElement("h3");
+                    h3.textContent = product.name;
+    
+                    const price = document.createElement("div");
+                    price.classList.add("product-price");
+                    price.textContent =
+                        product.variants && product.variants.length > 0 && product.variants[0].price != null
+                            ? `${Number(product.variants[0].price).toFixed(2)} ₴`
+                            : "Ціна недоступна";
+    
+                    const viewButton = document.createElement("a");
+                    viewButton.href = `product-details.html?id=${product.id}`;
+                    viewButton.classList.add("btn-view-cart");
+                    viewButton.textContent = "Переглянути";
+    
+                    productInfo.appendChild(h3);
+                    productInfo.appendChild(price);
+                    productInfo.appendChild(viewButton);
+                    productCard.appendChild(img);
+                    productCard.appendChild(productInfo);
+                    productsGrid.appendChild(productCard);
+                });
+    
+                document.querySelectorAll(".product-card").forEach(card => {
+                    card.addEventListener("click", (e) => {
+                        if (!e.target.closest(".btn-view-cart")) {
+                            const productId = card.dataset.productId;
+                            window.location.href = `product-details.html?id=${productId}`;
+                        }
+                    });
+                });
+    
+            } catch (error) {
+                console.error("Помилка завантаження товарів:", error);
+                productsGrid.innerHTML = '<p class="error-message">Не вдалося завантажити товари. Спробуйте пізніше.</p>';
+            }
+        });
+    </script>
+    
+</body>
+</html>

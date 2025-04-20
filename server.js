@@ -5,37 +5,24 @@ const cors = require("cors");
 const app = express();
 const port = process.env.PORT || 3000;
 
-// Middleware для обробки JSON-запитів
 app.use(express.json());
-
-// Активуємо CORS
 app.use(cors());
 
-// Конфігурація підключення до бази даних MySQL
-const dbConfig = {
+// Пул підключень до MySQL
+const pool = mysql.createPool({
   host: "localhost",
   user: "root",
   password: "Roma2008.",
   database: "Visar",
-};
+  waitForConnections: true,
+  connectionLimit: 100, // дозволити до 100 одночасних підключень
+  queueLimit: 0
+});
 
-// Функція для підключення до бази даних
-async function connectToDatabase() {
-  try {
-    const connection = await mysql.createConnection(dbConfig);
-    console.log("Успішно підключено до бази даних");
-    return connection;
-  } catch (error) {
-    console.error("Помилка підключення до бази даних:", error.message);
-    throw error;
-  }
-}
-
-// Маршрут для отримання категорій та підкатегорій
+// Маршрут: Отримання категорій та підкатегорій
 app.get("/api/categories", async (req, res) => {
   try {
-    const connection = await connectToDatabase();
-    const [rows] = await connection.query(`
+    const [rows] = await pool.query(`
       SELECT 
         c.CategoryID AS categoryId, 
         c.CategoryName AS categoryName, 
@@ -45,7 +32,6 @@ app.get("/api/categories", async (req, res) => {
       LEFT JOIN Subcategories sc ON c.CategoryID = sc.CategoryID
     `);
 
-    // Групування результатів за категоріями
     const categories = [];
     const categoriesMap = new Map();
 
@@ -71,15 +57,14 @@ app.get("/api/categories", async (req, res) => {
     res.json(categories);
   } catch (error) {
     console.error("Помилка отримання категорій:", error.message);
-    res.status(500).json({ message: "Не вдалося отримати категорії", error: error.message });
+    res.status(500).json({ message: "Не вдалося отримати категорії" });
   }
 });
 
-// Маршрут для отримання продуктів з варіантами
+// Маршрут: Отримання всіх продуктів
 app.get("/api/products", async (req, res) => {
   try {
-    const connection = await connectToDatabase();
-    const [rows] = await connection.query(`
+    const [rows] = await pool.query(`
       SELECT 
         p.ProductID AS productId,
         p.Name AS productName,
@@ -99,7 +84,6 @@ app.get("/api/products", async (req, res) => {
       LEFT JOIN ProductVariants pv ON p.ProductID = pv.ProductID
     `);
 
-    // Групування результатів за продуктами
     const products = [];
     const productsMap = new Map();
 
@@ -137,19 +121,16 @@ app.get("/api/products", async (req, res) => {
     res.json(products);
   } catch (error) {
     console.error("Помилка отримання продуктів:", error.message);
-    res.status(500).json({ message: "Не вдалося отримати продукти", error: error.message });
+    res.status(500).json({ message: "Не вдалося отримати продукти" });
   }
 });
 
-// Маршрут для отримання одного продукту за ID
+// Маршрут: Отримання одного продукту по ID
 app.get("/api/products/:id", async (req, res) => {
   const productId = req.params.id;
 
   try {
-    const connection = await connectToDatabase();
-
-    // Отримати продукт
-    const [productRows] = await connection.query(`
+    const [productRows] = await pool.query(`
       SELECT 
         p.ProductID AS productId,
         p.Name AS productName,
@@ -185,8 +166,7 @@ app.get("/api/products/:id", async (req, res) => {
       variants: [],
     };
 
-    // Отримати варіанти продукту
-    const [variantRows] = await connection.query(`
+    const [variantRows] = await pool.query(`
       SELECT 
         VariantID AS id,
         Size AS size,
@@ -205,8 +185,6 @@ app.get("/api/products/:id", async (req, res) => {
   }
 });
 
-
-// Запуск сервера
 app.listen(port, () => {
   console.log(`Сервер запущено на http://localhost:${port}`);
 });

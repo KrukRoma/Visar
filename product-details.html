@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Деталі продукту</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;500;700&display=swap" rel="stylesheet">
+    <title>Деталі продукту - VISAR</title>
+    <link rel="stylesheet" href="visar.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="icon" href="https://www.visarppf.com/wp-content/uploads/2024/03/cropped-photo_2024-03-05_23-29-35-removebg-preview.png" type="image/png">
     <style>
         * {
             margin: 0;
@@ -17,7 +18,23 @@
             font-family: 'Montserrat', sans-serif;
             color: #333;
             line-height: 1.6;
-            background-color: #f9f9f9;
+            background-color: white;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            margin: 0;
+        }
+
+        main {
+            flex: 1;
+            background-color: white;
+            color: #333;
+        }
+
+        header {
+            position: sticky;
+            top: 0;
+            z-index: 1000;
         }
 
         .container {
@@ -26,204 +43,198 @@
             padding: 0 20px;
         }
 
-        header {
-            background-color: #fff;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            position: sticky;
-            top: 0;
-            z-index: 1000;
-        }
-
-        header .container {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 15px 20px;
-        }
-
-        .logo img {
-            height: 50px;
-        }
-
-        .main-menu {
-            display: flex;
-            list-style: none;
-            gap: 30px;
-        }
-
-        .main-menu li {
-            position: relative;
-        }
-
-        .main-menu a {
-            text-decoration: none;
-            color: #333;
-            font-weight: 500;
-            font-size: 16px;
-            transition: color 0.3s ease;
-        }
-
-        .main-menu a:hover {
-            color: #ff4d4f;
-        }
-
-        .contact-info {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .phone a {
-            color: #333;
-            text-decoration: none;
-            font-weight: 500;
-        }
-
-        .social-icons {
-            display: flex;
-            gap: 10px;
-        }
-
-        .social-icons a {
-            color: #333;
-            font-size: 20px;
-            transition: color 0.3s ease;
-        }
-
-        .social-icons a:hover {
-            color: #ff4d4f;
-        }
-
-        .mobile-menu-toggle {
-            display: none;
-            background: none;
-            border: none;
-            font-size: 24px;
-            cursor: pointer;
-        }
-
-        @media (max-width: 768px) {
-            .main-menu,
-            .contact-info {
-                display: none;
-            }
-
-            .mobile-menu-toggle {
-                display: block;
-            }
-        }
-
         .product-details-section {
-            padding: 50px 0;
+            padding: 40px 0;
+            margin-top: 80px;
+            min-height: 600px;
         }
 
         .product-details {
             display: flex;
-            gap: 40px;
-            background-color: #fff;
-            padding: 30px;
-            border-radius: 10px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            flex-direction: column;
+            gap: 30px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
 
-        .product-image-container {
-            flex: 1;
+        .product-details.loaded {
+            opacity: 1;
         }
 
         .product-image {
             width: 100%;
-            height: 400px;
-            object-fit: cover;
-            border-radius: 10px;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
 
         .product-info-container {
-            flex: 1;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            gap: 20px;
         }
 
         .product-title {
-            font-size: 28px;
-            font-weight: 700;
-            margin-bottom: 15px;
+            font-size: 32px;
+            margin: 0;
+            color: #333;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .product-size {
+            font-size: 18px;
+            color: #333;
         }
 
         .product-price {
             font-size: 24px;
-            color: #ff4d4f;
-            margin-bottom: 20px;
+            font-weight: bold;
+            color: #e63946;
+        }
+
+        .product-description-container {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .product-description-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            text-transform: uppercase;
         }
 
         .product-description {
             font-size: 16px;
-            color: #666;
-            margin-bottom: 20px;
-        }
-
-        .btn-add-to-cart {
-            display: inline-block;
-            padding: 12px 25px;
-            background-color: #ff4d4f;
-            color: #fff;
-            text-decoration: none;
-            font-weight: 500;
-            font-size: 16px;
-            border-radius: 5px;
-            transition: background-color 0.3s ease;
-            align-self: flex-start;
-        }
-
-        .btn-add-to-cart:hover {
-            background-color: #e04345;
+            line-height: 1.6;
+            color: #333;
         }
 
         .error-message {
             text-align: center;
+            color: #e63946;
             font-size: 18px;
-            color: #ff4d4f;
-            padding: 50px 0;
+            margin: 40px 0;
         }
 
-        @media (max-width: 768px) {
-            .product-details {
-                flex-direction: column;
-                padding: 20px;
+        .skeleton-product-details {
+            display: flex;
+            flex-direction: column;
+            gap: 30px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+
+        .skeleton-image {
+            position: relative;
+            width: 100%;
+            padding-bottom: 100%;
+            background-color: #e0e0e0;
+            border-radius: 8px;
+        }
+
+        .skeleton-info {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .skeleton-title {
+            width: 70%;
+            height: 32px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .skeleton-size {
+            width: 50%;
+            height: 18px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .skeleton-price {
+            width: 40%;
+            height: 24px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .skeleton-description-title {
+            width: 30%;
+            height: 18px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        .skeleton-description {
+            width: 100%;
+            height: 80px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
+
+        @keyframes pulse {
+            0% { background-color: #e0e0e0; }
+            50% { background-color: #f0f0f0; }
+            100% { background-color: #e0e0e0; }
+        }
+
+        @media (min-width: 768px) {
+            .product-details,
+            .skeleton-product-details {
+                flex-direction: row;
+                align-items: flex-start;
             }
 
-            .product-image {
-                height: 300px;
+            .product-image,
+            .skeleton-image {
+                flex: 1;
+                max-width: 50%;
             }
 
-            .btn-add-to-cart {
-                align-self: stretch;
-                text-align: center;
+            .product-info-container,
+            .skeleton-info {
+                flex: 1;
+                max-width: 50%;
             }
+        }
+
+        .footer-content p {
+            color: #ffffff; /* Білий колір для тексту в футері */
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <div class="logo">
-                <img src="logo.png" alt="Logo">
-            </div>
-            <ul class="main-menu">
-                <li><a href="visar.html">Головна</a></li>
-                <li><a href="#">Каталог</a></li>
-                <li><a href="#">Послуги</a></li>
-                <li><a href="#">Контакти</a></li>
-            </ul>
+            <a href="/" class="logo">
+                <img src="images/VisarLogo.png" alt="VISAR Logo">
+            </a>
+            <nav>
+                <ul class="main-menu">
+                    <li><a href="#why-need" class="info-link">Корисна інформація</a></li>
+                    <li><a href="#">Контакти</a></li>
+                    <li class="dropdown">
+                        <a href="#product-slider" class="catalog-link dropdown-toggle">Каталог товарів <i class="fas fa-chevron-down"></i></a>
+                        <div class="dropdown-menu" id="dynamic-catalog">
+                            <!-- Категорії будуть завантажені динамічно -->
+                        </div>
+                    </li>
+                </ul>
+            </nav>
             <div class="contact-info">
                 <div class="phone">
-                    <i class="fas fa-phone-alt"></i>
-                    <a href="tel:+380123456789">+380 123 456 789</a>
+                    <i class="fas fa-phone"></i>
+                    <a href="tel:+380968798833">+380 96 879 88 33</a>
                 </div>
                 <div class="social-icons">
-                    <a href="#"><i class="fab fa-facebook-f"></i></a>
-                    <a href="#"><i class="fab fa-instagram"></i></a>
-                    <a href="#"><i class="fab fa-youtube"></i></a>
+                    <a href="https://www.instagram.com/dlab.usa/" target="_blank" class="instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="viber://chat?number=%2B380968798833" class="viber"><i class="fab fa-viber"></i></a>
+                    <a href="https://t.me/+380968798833" target="_blank" class="telegram"><i class="fab fa-telegram"></i></a>
+                    <a href="https://wa.me/380968798833" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
                 </div>
             </div>
             <button class="mobile-menu-toggle">
@@ -232,34 +243,196 @@
         </div>
     </header>
 
-    <section class="product-details-section">
-        <div class="container">
-            <div class="product-details" id="product-details">
-                <!-- Дані про продукт будуть вставлені через JavaScript -->
+    <div class="mobile-menu">
+        <div class="mobile-menu-header">
+            <a href="/" class="logo">
+                <img src="https://www.visarppf.com/wp-content/uploads/2024/03/cropped-photo_2024-03-05_23-29-35-removebg-preview.png" alt="VISAR Logo">
+            </a>
+            <button class="mobile-menu-close">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+        <ul class="mobile-menu-items" id="mobile-dynamic-catalog">
+            <!-- Категорії для мобільного меню будуть завантажені динамічно -->
+        </ul>
+        <div class="mobile-contact-info">
+            <div class="phone">
+                <i class="fas fa-phone"></i>
+                <a href="tel:+380968798833">+380 96 879 88 33</a>
+            </div>
+            <div class="social-icons">
+                <a href="https://www.instagram.com/dlab.usa/" target="_blank" class="instagram"><i class="fab fa-instagram"></i></a>
+                <a href="viber://chat?number=%2B380968798833" class="viber"><i class="fab fa-viber"></i></a>
+                <a href="https://t.me/+380968798833" target="_blank" class="telegram"><i class="fab fa-telegram"></i></a>
+                <a href="https://wa.me/380968798833" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
             </div>
         </div>
-    </section>
+    </div>
 
+    <main>
+        <section class="product-details-section">
+            <div class="container">
+                <div class="skeleton-product-details" id="skeleton-product-details">
+                    <div class="skeleton-image"></div>
+                    <div class="skeleton-info">
+                        <div class="skeleton-title"></div>
+                        <div class="skeleton-size"></div>
+                        <div class="skeleton-price"></div>
+                        <div class="skeleton-description-title"></div>
+                        <div class="skeleton-description"></div>
+                    </div>
+                </div>
+                <div class="product-details" id="product-details">
+                    <!-- Деталі продукту будуть вставлені через JavaScript -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-logo">
+                    <img src="/images/VisarLogo.png" alt="VISAR Logo">
+                </div>
+                <div class="footer-info">
+                    <p>© 2024 VISAR. Всі права захищені.</p>
+                    <p>Офіційне представництво в Україні</p>
+                </div>
+                <div class="footer-contact">
+                    <p>Телефон: <a href="tel:+380968798833">+380 96 879 88 33</a></p>
+                </div>
+                <div class="footer-social">
+                    <a href="https://www.instagram.com/dlab.usa/" target="_blank" class="instagram"><i class="fab fa-instagram"></i></a>
+                    <a href="viber://chat?number=%2B380968798833" class="viber"><i class="fab fa-viber"></i></a>
+                    <a href="https://t.me/+380968798833" target="_blank" class="telegram"><i class="fab fa-telegram"></i></a>
+                    <a href="https://wa.me/380968798833" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="visar.js"></script>
     <script>
-        document.addEventListener("DOMContentLoaded", async () => {
-            const productDetailsContainer = document.getElementById("product-details");
+        async function loadCatalog() {
+            const catalogContainer = document.getElementById("dynamic-catalog");
+            const mobileCatalogContainer = document.getElementById("mobile-dynamic-catalog");
 
-            // Отримуємо ID продукту з URL
+            try {
+                const response = await fetch("http://localhost:3000/api/categories");
+                if (!response.ok) {
+                    throw new Error(`HTTP помилка: ${response.status}`);
+                }
+                const categories = await response.json();
+
+                catalogContainer.innerHTML = '';
+                mobileCatalogContainer.innerHTML = '';
+
+                categories.forEach(category => {
+                    const categoryItemDesktop = createCategoryItem(category);
+                    const categoryItemMobile = createMobileCategoryItem(category);
+
+                    catalogContainer.appendChild(categoryItemDesktop);
+                    mobileCatalogContainer.appendChild(categoryItemMobile);
+                });
+            } catch (error) {
+                console.error("Помилка завантаження каталогу:", error);
+                catalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
+                mobileCatalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
+            }
+        }
+
+        function createCategoryItem(category) {
+            const categoryItem = document.createElement("div");
+            categoryItem.classList.add("dropdown-item");
+
+            if (category.subcategories && category.subcategories.length > 0) {
+                categoryItem.classList.add("has-submenu");
+                const categoryLink = document.createElement("a");
+                categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                categoryLink.classList.add("submenu-toggle");
+                categoryLink.textContent = category.name;
+                categoryLink.innerHTML += ' <i class="fas fa-chevron-right"></i>';
+
+                const subMenu = document.createElement("div");
+                subMenu.classList.add("submenu");
+
+                category.subcategories.forEach(subcategory => {
+                    const subcategoryLink = document.createElement("a");
+                    subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
+                    subcategoryLink.textContent = subcategory.name;
+                    subMenu.appendChild(subcategoryLink);
+                });
+
+                categoryItem.appendChild(categoryLink);
+                categoryItem.appendChild(subMenu);
+            } else {
+                const categoryLink = document.createElement("a");
+                categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                categoryLink.textContent = category.name;
+                categoryItem.appendChild(categoryLink);
+            }
+
+            return categoryItem;
+        }
+
+        function createMobileCategoryItem(category) {
+            const categoryItem = document.createElement("li");
+            categoryItem.classList.add("mobile-dropdown-item");
+
+            if (category.subcategories && category.subcategories.length > 0) {
+                const categoryLink = document.createElement("a");
+                categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                categoryLink.classList.add("mobile-submenu-toggle");
+                categoryLink.textContent = category.name;
+                categoryLink.innerHTML += ' <i class="fas fa-chevron-down"></i>';
+
+                const subMenu = document.createElement("ul");
+                subMenu.classList.add("mobile-submenu");
+
+                category.subcategories.forEach(subcategory => {
+                    const subcategoryItem = document.createElement("li");
+                    const subcategoryLink = document.createElement("a");
+                    subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
+                    subcategoryLink.textContent = subcategory.name;
+                    subcategoryItem.appendChild(subcategoryLink);
+                    subMenu.appendChild(subcategoryItem);
+                });
+
+                categoryItem.appendChild(categoryLink);
+                categoryItem.appendChild(subMenu);
+            } else {
+                const categoryLink = document.createElement("a");
+                categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                categoryLink.textContent = category.name;
+                categoryItem.appendChild(categoryLink);
+            }
+
+            return categoryItem;
+        }
+
+        async function loadProductDetails() {
+            const productDetailsContainer = document.getElementById("product-details");
+            const skeletonProductDetails = document.getElementById("skeleton-product-details");
+
             const urlParams = new URLSearchParams(window.location.search);
             const productId = urlParams.get("id");
 
             if (!productId) {
+                skeletonProductDetails.style.display = "none";
                 productDetailsContainer.innerHTML = '<p class="error-message">Продукт не знайдено.</p>';
+                productDetailsContainer.classList.add("loaded");
                 return;
             }
 
             try {
                 console.log("Завантаження продукту з ID:", productId);
-                // Завантажуємо дані про продукт з API
                 const response = await fetch(`http://localhost:3000/api/products/${productId}`);
                 if (!response.ok) {
                     if (response.status === 404) {
+                        skeletonProductDetails.style.display = "none";
                         productDetailsContainer.innerHTML = '<p class="error-message">Продукт із таким ID не знайдено.</p>';
+                        productDetailsContainer.classList.add("loaded");
                         throw new Error("Продукт не знайдено");
                     }
                     throw new Error(`HTTP помилка: ${response.status}`);
@@ -267,32 +440,40 @@
                 const product = await response.json();
                 console.log("Отримані дані про продукт:", product);
 
-                // Форматуємо ціну
                 const price = product.variants && product.variants.length > 0 && product.variants[0].price != null
-                    ? `${Number(product.variants[0].price).toFixed(2)} ₴`
+                    ? `$${Number(product.variants[0].price).toLocaleString('en-US', { minimumFractionDigits: 2 })}`
                     : "Ціна недоступна";
 
-                // Генеруємо HTML для продукту
+                const size = "60 inches / 54 feet";
+
                 productDetailsContainer.innerHTML = `
-                    <div class="product-image-container">
-                        <img src="${product.photo}" alt="${product.name}" class="product-image">
-                    </div>
+                    <img src="${product.photo}" alt="${product.name}" class="product-image">
                     <div class="product-info-container">
-                        <div>
-                            <h1 class="product-title">${product.name}</h1>
-                            <div class="product-price">${price}</div>
+                        <h1 class="product-title">${product.name}</h1>
+                        <div class="product-size">Size: ${size}</div>
+                        <div class="product-price">${price}</div>
+                        <div class="product-description-container">
+                            <div class="product-description-title">Product Description</div>
                             <p class="product-description">${product.description || "Опис продукту відсутній."}</p>
                         </div>
-                        <a href="#" class="btn-add-to-cart">Додати до кошика</a>
                     </div>
                 `;
+
+                skeletonProductDetails.style.display = "none";
+                productDetailsContainer.classList.add("loaded");
             } catch (error) {
                 console.error("Помилка завантаження продукту:", error);
-                if (!productDetailsContainer.innerHTML) {
-                    productDetailsContainer.innerHTML = '<p class="error-message">Не вдалося завантажити продукт. Спробуйте пізніше.</p>';
-                }
+                skeletonProductDetails.style.display = "none";
+                productDetailsContainer.innerHTML = '<p class="error-message">Не вдалося завантажити продукт. Спробуйте пізніше.</p>';
+                productDetailsContainer.classList.add("loaded");
             }
+        }
+
+        document.addEventListener("DOMContentLoaded", async () => {
+            await loadCatalog();
+            await loadProductDetails();
         });
     </script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93362e9aac22bd1b',t:'MTc0NTE2ODI2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
 </body>
 </html>

@@ -11,11 +11,18 @@
         body {
             background-color: white;
             color: #333;
+            min-height: 100vh; /* Забезпечує мінімальну висоту сторінки */
+            display: flex;
+            flex-direction: column;
+        }
+        
+        main {
+            flex: 1; /* Розширює основний контент, щоб футер залишався внизу */
         }
         
         .category-products-section {
             padding: 40px 0;
-            margin-top: 80px; /* Відступ зверху, щоб заголовок не перекривався хедером */
+            margin-top: 80px;
         }
         
         .category-title {
@@ -23,26 +30,46 @@
             margin-bottom: 30px;
             font-size: 32px;
             color: #333;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+        }
+        
+        .category-title.loaded {
+            opacity: 1;
+        }
+        
+        .skeleton-title {
+            width: 300px;
+            height: 32px;
+            margin: 0 auto 30px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            animation: pulse 1.5s infinite ease-in-out;
         }
         
         .products-grid {
             display: grid;
             grid-template-columns: repeat(1, 1fr);
-            gap: 30px; /* Збільшуємо відстань між продуктами */
+            gap: 40px;
             margin-top: 30px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
+            min-height: 600px; /* Резервуємо місце для продуктів */
+        }
+        
+        .products-grid.loaded {
+            opacity: 1;
         }
         
         @media (min-width: 576px) {
             .products-grid {
                 grid-template-columns: repeat(2, 1fr);
-                gap: 30px; /* Збільшуємо відстань між продуктами */
             }
         }
         
         @media (min-width: 992px) {
             .products-grid {
                 grid-template-columns: repeat(3, 1fr);
-                gap: 30px; /* Збільшуємо відстань між продуктами */
             }
         }
         
@@ -67,8 +94,8 @@
         .product-image-container {
             position: relative;
             width: 100%;
-            padding-bottom: 100%; /* Робимо контейнер квадратним (співвідношення сторін 1:1) */
-            background-color: #000; /* Чорний фон для контейнера, як на скріншоті */
+            padding-bottom: 100%;
+            background-color: #000;
             overflow: hidden;
         }
         
@@ -78,7 +105,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            object-fit: cover; /* Змінюємо на cover, щоб зображення заповнювало весь контейнер */
+            object-fit: cover;
         }
         
         .product-info {
@@ -87,7 +114,7 @@
             flex-direction: column;
             flex-grow: 1;
             justify-content: space-between;
-            text-align: center; /* Центруємо текст для симетрії */
+            text-align: center;
             background-color: white;
         }
         
@@ -96,7 +123,7 @@
             font-size: 18px;
             color: #333;
             font-weight: 600;
-            height: 44px; /* Фіксована висота для назви продукту */
+            height: 44px;
             overflow: hidden;
             display: -webkit-box;
             -webkit-box-orient: vertical;
@@ -120,7 +147,7 @@
             font-weight: 600;
             transition: background-color 0.3s ease;
             margin-top: 10px;
-            width: 100%; /* Кнопка на всю ширину */
+            width: 100%;
         }
         
         .btn-view-cart:hover {
@@ -134,86 +161,127 @@
             margin: 40px 0;
         }
         
-        /* Стилі для футера */
-        footer {
-            background-color: #222;
-            color: white;
-            padding: 30px 0;
-        }
-        
-        .footer-content {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-        }
-        
-        .footer-info p, 
-        .footer-contact p, 
-        .footer-contact a {
-            color: white;
-            margin: 5px 0;
-        }
-        
         /* Стилі для пагінації */
         .pagination {
             display: flex;
             justify-content: center;
             align-items: center;
-            margin: 40px 0 20px;
-            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 40px;
+            opacity: 0;
+            transition: opacity 0.5s ease-in-out;
         }
         
-        .pagination-item {
+        .pagination.loaded {
+            opacity: 1;
+        }
+        
+        .pagination a {
             display: flex;
             justify-content: center;
             align-items: center;
             width: 40px;
             height: 40px;
-            margin: 0 5px;
-            border: 1px solid #ddd;
+            border: 1px solid #e63946;
+            border-radius: 4px;
             color: #333;
+            font-weight: 600;
             text-decoration: none;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
         
-        .pagination-item:hover {
-            background-color: #f5f5f5;
-        }
-        
-        .pagination-item.active {
-            background-color: #c1121f;
+        .pagination a.active {
+            background-color: #e63946;
             color: white;
-            border-color: #c1121f;
         }
         
-        .pagination-dots {
-            margin: 0 5px;
-            color: #333;
+        .pagination a:hover:not(.dots) {
+            background-color: #e63946;
+            color: white;
         }
         
-        .pagination-arrow {
+        .pagination a.dots {
+            border: none;
+            pointer-events: none;
+        }
+        
+        .pagination a.arrow {
+            font-size: 18px;
+        }
+        
+        /* Стилі для лоадера */
+        .loader {
             display: flex;
             justify-content: center;
             align-items: center;
+            min-height: 200px;
+        }
+        
+        .loader::after {
+            content: '';
             width: 40px;
             height: 40px;
-            margin: 0 5px;
-            border: 1px solid #ddd;
-            color: #333;
-            text-decoration: none;
-            font-size: 16px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            border: 4px solid #e63946;
+            border-top: 4px solid transparent;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
         }
         
-        .pagination-arrow:hover {
-            background-color: #f5f5f5;
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
         
+        /* Стилі для скелетного лоадера */
+        .skeleton-card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            height: 400px;
+            display: flex;
+            flex-direction: column;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
         
+        .skeleton-image {
+            width: 100%;
+            padding-bottom: 100%;
+            background-color: #e0e0e0;
+        }
+        
+        .skeleton-text {
+            margin: 15px;
+            height: 20px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
+        
+        .skeleton-button {
+            margin: 15px;
+            height: 40px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+        }
+        
+        .skeleton-title {
+            width: 300px;
+            height: 32px;
+            margin: 0 auto 30px;
+            background-color: #e0e0e0;
+            border-radius: 4px;
+            animation: pulse 1.5s infinite ease-in-out;
+        }
+        
+        @keyframes pulse {
+            0% { background-color: #e0e0e0; }
+            50% { background-color: #f0f0f0; }
+            100% { background-color: #e0e0e0; }
+        }
+        
+        /* Стилі для футера */
+        .footer-content p {
+            color: #ffffff; /* Білий колір для тексту в футері */
+        }
     </style>
 </head>
 <body>
@@ -278,25 +346,63 @@
         </div>
     </div>
 
-    <section class="category-products-section">
-        <div class="container">
-            <h1 class="category-title" id="category-title">Товари категорії</h1>
-            <div class="products-grid" id="products-grid">
-                <!-- Товари будуть вставлені через JavaScript -->
+    <main>
+        <section class="category-products-section">
+            <div class="container">
+                <div class="skeleton-title" id="skeleton-title"></div>
+                <h1 class="category-title" id="category-title">Товари категорії</h1>
+                <div class="loader" id="loader"></div>
+                <div class="products-grid" id="products-grid">
+                    <!-- Скелетний лоадер -->
+                    <div class="skeleton-card">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text" style="height: 15px;"></div>
+                        <div class="skeleton-button"></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text" style="height: 15px;"></div>
+                        <div class="skeleton-button"></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text" style="height: 15px;"></div>
+                        <div class="skeleton-button"></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text" style="height: 15px;"></div>
+                        <div class="skeleton-button"></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text" style="height: 15px;"></div>
+                        <div class="skeleton-button"></div>
+                    </div>
+                    <div class="skeleton-card">
+                        <div class="skeleton-image"></div>
+                        <div class="skeleton-text"></div>
+                        <div class="skeleton-text" style="height: 15px;"></div>
+                        <div class="skeleton-button"></div>
+                    </div>
+                </div>
+                <div class="pagination" id="pagination">
+                    <!-- Пагінація буде вставлена через JavaScript -->
+                </div>
             </div>
-            
-            <!-- Додаємо пагінацію -->
-            <div class="pagination" id="pagination">
-                <!-- Пагінація буде вставлена через JavaScript -->
-            </div>
-        </div>
-    </section>
+        </section>
+    </main>
 
     <footer>
         <div class="container">
             <div class="footer-content">
                 <div class="footer-logo">
-                    <img src="images/VisarLogo.png" alt="VISAR Logo">
+                    <img src="/images/VisarLogo.png" alt="VISAR Logo">
                 </div>
                 <div class="footer-info">
                     <p>© 2024 VISAR. Всі права захищені.</p>
@@ -319,43 +425,149 @@
     <script>
         document.addEventListener("DOMContentLoaded", async () => {
             const categoryTitle = document.getElementById("category-title");
+            const skeletonTitle = document.getElementById("skeleton-title");
             const productsGrid = document.getElementById("products-grid");
             const paginationContainer = document.getElementById("pagination");
-            
-            // Завантаження категорій для меню
-            loadCategories();
-    
+            const loader = document.getElementById("loader");
+
+            // Завантаження каталогу
+            const catalogContainer = document.getElementById("dynamic-catalog");
+            const mobileCatalogContainer = document.getElementById("mobile-dynamic-catalog");
+
+            async function loadCatalog() {
+                try {
+                    const response = await fetch("http://localhost:3000/api/categories");
+                    if (!response.ok) {
+                        throw new Error(`HTTP помилка: ${response.status}`);
+                    }
+                    const categories = await response.json();
+
+                    categories.forEach(category => {
+                        const categoryItemDesktop = createCategoryItem(category);
+                        const categoryItemMobile = createMobileCategoryItem(category);
+
+                        catalogContainer.appendChild(categoryItemDesktop);
+                        mobileCatalogContainer.appendChild(categoryItemMobile);
+                    });
+                } catch (error) {
+                    console.error("Помилка завантаження каталогу:", error);
+                    catalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
+                    mobileCatalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
+                }
+            }
+
+            function createCategoryItem(category) {
+                const categoryItem = document.createElement("div");
+                categoryItem.classList.add("dropdown-item");
+
+                if (category.subcategories && category.subcategories.length > 0) {
+                    categoryItem.classList.add("has-submenu");
+                    const categoryLink = document.createElement("a");
+                    categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                    categoryLink.classList.add("submenu-toggle");
+                    categoryLink.textContent = category.name;
+                    categoryLink.innerHTML += ' <i class="fas fa-chevron-right"></i>';
+
+                    const subMenu = document.createElement("div");
+                    subMenu.classList.add("submenu");
+
+                    category.subcategories.forEach(subcategory => {
+                        const subcategoryLink = document.createElement("a");
+                        subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
+                        subcategoryLink.textContent = subcategory.name;
+                        subMenu.appendChild(subcategoryLink);
+                    });
+
+                    categoryItem.appendChild(categoryLink);
+                    categoryItem.appendChild(subMenu);
+                } else {
+                    const categoryLink = document.createElement("a");
+                    categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                    categoryLink.textContent = category.name;
+                    categoryItem.appendChild(categoryLink);
+                }
+
+                return categoryItem;
+            }
+
+            function createMobileCategoryItem(category) {
+                const categoryItem = document.createElement("li");
+                categoryItem.classList.add("mobile-dropdown-item");
+
+                if (category.subcategories && category.subcategories.length > 0) {
+                    const categoryLink = document.createElement("a");
+                    categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                    categoryLink.classList.add("mobile-submenu-toggle");
+                    categoryLink.textContent = category.name;
+                    categoryLink.innerHTML += ' <i class="fas fa-chevron-down"></i>';
+
+                    const subMenu = document.createElement("ul");
+                    subMenu.classList.add("mobile-submenu");
+
+                    category.subcategories.forEach(subcategory => {
+                        const subcategoryItem = document.createElement("li");
+                        const subcategoryLink = document.createElement("a");
+                        subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
+                        subcategoryLink.textContent = subcategory.name;
+                        subcategoryItem.appendChild(subcategoryLink);
+                        subMenu.appendChild(subcategoryItem);
+                    });
+
+                    categoryItem.appendChild(categoryLink);
+                    categoryItem.appendChild(subMenu);
+                } else {
+                    const categoryLink = document.createElement("a");
+                    categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                    categoryLink.textContent = category.name;
+                    categoryItem.appendChild(categoryLink);
+                }
+
+                return categoryItem;
+            }
+
+            await loadCatalog();
+
             const urlParams = new URLSearchParams(window.location.search);
             const categoryId = urlParams.get("categoryId");
             const subcategoryId = urlParams.get("subcategoryId");
             const page = parseInt(urlParams.get("page")) || 1;
-            const productsPerPage = 21; // Максимум 21 продукт на сторінці
-    
+            const productsPerPage = 21;
+
             if (!categoryId && !subcategoryId) {
+                loader.style.display = "none";
+                skeletonTitle.style.display = "none";
+                categoryTitle.textContent = "Категорію не вказано";
+                categoryTitle.classList.add("loaded");
                 productsGrid.innerHTML = '<p class="error-message">Категорію або підкатегорію не вказано.</p>';
+                productsGrid.classList.add("loaded");
                 return;
             }
-    
+
             try {
                 const categoriesResponse = await fetch("http://localhost:3000/api/categories");
                 if (!categoriesResponse.ok) {
                     throw new Error(`HTTP помилка (категорії): ${categoriesResponse.status}`);
                 }
                 const categories = await categoriesResponse.json();
-    
+
                 let categoryName = "Товари";
                 let filteredProducts = [];
-    
+
                 const productsResponse = await fetch("http://localhost:3000/api/products");
                 if (!productsResponse.ok) {
                     throw new Error(`HTTP помилка (продукти): ${productsResponse.status}`);
                 }
                 const allProducts = await productsResponse.json();
-    
+
                 if (categoryId) {
                     const category = categories.find(cat => cat.id === parseInt(categoryId));
                     if (!category) {
+                        loader.style.display = "none";
+                        skeletonTitle.style.display = "none";
+                        categoryTitle.textContent = "Категорію не знайдено";
+                        categoryTitle.classList.add("loaded");
                         productsGrid.innerHTML = '<p class="error-message">Категорію не знайдено.</p>';
+                        productsGrid.classList.add("loaded");
                         return;
                     }
                     categoryName = category.name;
@@ -371,7 +583,12 @@
                         }
                     }
                     if (!subcategory) {
+                        loader.style.display = "none";
+                        skeletonTitle.style.display = "none";
+                        categoryTitle.textContent = "Підкатегорію не знайдено";
+                        categoryTitle.classList.add("loaded");
                         productsGrid.innerHTML = '<p class="error-message">Підкатегорію не знайдено.</p>';
+                        productsGrid.classList.add("loaded");
                         return;
                     }
                     categoryName = subcategory.name;
@@ -379,75 +596,70 @@
                         product.subcategory && parseInt(product.subcategory.id) === parseInt(subcategoryId)
                     );
                 }
-    
+
+                // Оновлюємо заголовок і прибираємо скелетний лоадер
                 categoryTitle.textContent = categoryName;
-    
+                skeletonTitle.style.display = "none";
+                categoryTitle.classList.add("loaded");
+
                 if (filteredProducts.length === 0) {
+                    loader.style.display = "none";
                     productsGrid.innerHTML = '<p class="error-message">Товарів у цій категорії немає.</p>';
+                    productsGrid.classList.add("loaded");
                     return;
                 }
-                
-                // Розрахунок пагінації
-                const totalProducts = filteredProducts.length;
-                const totalPages = Math.ceil(totalProducts / productsPerPage);
-                
-                // Отримуємо продукти для поточної сторінки
+
+                // Пагінація
+                const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
                 const startIndex = (page - 1) * productsPerPage;
-                const endIndex = Math.min(startIndex + productsPerPage, totalProducts);
-                const currentPageProducts = filteredProducts.slice(startIndex, endIndex);
-                
-                // Очищаємо контейнер продуктів
+                const endIndex = startIndex + productsPerPage;
+                const currentProducts = filteredProducts.slice(startIndex, endIndex);
+
+                // Очищаємо скелетний лоадер
                 productsGrid.innerHTML = '';
-    
-                // Додаємо продукти на сторінку
-                currentPageProducts.forEach(product => {
+                currentProducts.forEach(product => {
                     const productCard = document.createElement("div");
                     productCard.classList.add("product-card");
                     productCard.dataset.productId = product.id;
-    
-                    // Створюємо контейнер для зображення
+
                     const imageContainer = document.createElement("div");
                     imageContainer.classList.add("product-image-container");
-    
+
                     const img = document.createElement("img");
                     img.src = product.photo;
                     img.alt = product.name;
                     img.classList.add("product-image");
+                    img.loading = "lazy";
                     
-                    // Додаємо зображення в контейнер
                     imageContainer.appendChild(img);
-    
+
                     const productInfo = document.createElement("div");
                     productInfo.classList.add("product-info");
-    
+
                     const h3 = document.createElement("h3");
                     h3.textContent = product.name;
-    
+
                     const price = document.createElement("div");
                     price.classList.add("product-price");
                     price.textContent =
                         product.variants && product.variants.length > 0 && product.variants[0].price != null
                             ? `${Number(product.variants[0].price).toFixed(2)} ₴`
                             : "Ціна недоступна";
-    
+
                     const viewButton = document.createElement("a");
                     viewButton.href = `product-details.html?id=${product.id}`;
                     viewButton.classList.add("btn-view-cart");
                     viewButton.textContent = "Переглянути";
-    
+
                     productInfo.appendChild(h3);
                     productInfo.appendChild(price);
                     productInfo.appendChild(viewButton);
                     
-                    // Додаємо контейнер зображення та інформацію про продукт до картки
                     productCard.appendChild(imageContainer);
                     productCard.appendChild(productInfo);
                     productsGrid.appendChild(productCard);
                 });
-                
-                // Створюємо пагінацію
-                createPagination(page, totalPages, categoryId, subcategoryId);
-    
+
                 document.querySelectorAll(".product-card").forEach(card => {
                     card.addEventListener("click", (e) => {
                         if (!e.target.closest(".btn-view-cart")) {
@@ -456,165 +668,90 @@
                         }
                     });
                 });
-    
+
+                // Генерація пагінації
+                paginationContainer.innerHTML = '';
+                const baseUrl = categoryId 
+                    ? `category-products.html?categoryId=${categoryId}` 
+                    : `category-products.html?subcategoryId=${subcategoryId}`;
+
+                if (page > 1) {
+                    const prevLink = document.createElement("a");
+                    prevLink.href = `${baseUrl}&page=${page - 1}`;
+                    prevLink.classList.add("arrow");
+                    prevLink.innerHTML = "<";
+                    paginationContainer.appendChild(prevLink);
+                }
+
+                const maxVisiblePages = 5;
+                let startPage = Math.max(1, page - 2);
+                let endPage = Math.min(totalPages, startPage + maxVisiblePages - 1);
+
+                if (endPage - startPage + 1 < maxVisiblePages) {
+                    startPage = Math.max(1, endPage - maxVisiblePages + 1);
+                }
+
+                if (startPage > 1) {
+                    const firstPage = document.createElement("a");
+                    firstPage.href = `${baseUrl}&page=1`;
+                    firstPage.textContent = "1";
+                    paginationContainer.appendChild(firstPage);
+
+                    if (startPage > 2) {
+                        const dots = document.createElement("a");
+                        dots.classList.add("dots");
+                        dots.textContent = "...";
+                        paginationContainer.appendChild(dots);
+                    }
+                }
+
+                for (let i = startPage; i <= endPage; i++) {
+                    const pageLink = document.createElement("a");
+                    pageLink.href = `${baseUrl}&page=${i}`;
+                    pageLink.textContent = i;
+                    if (i === page) {
+                        pageLink.classList.add("active");
+                    }
+                    paginationContainer.appendChild(pageLink);
+                }
+
+                if (endPage < totalPages) {
+                    if (endPage < totalPages - 1) {
+                        const dots = document.createElement("a");
+                        dots.classList.add("dots");
+                        dots.textContent = "...";
+                        paginationContainer.appendChild(dots);
+                    }
+
+                    const lastPage = document.createElement("a");
+                    lastPage.href = `${baseUrl}&page=${totalPages}`;
+                    lastPage.textContent = totalPages;
+                    paginationContainer.appendChild(lastPage);
+                }
+
+                if (page < totalPages) {
+                    const nextLink = document.createElement("a");
+                    nextLink.href = `${baseUrl}&page=${page + 1}`;
+                    nextLink.classList.add("arrow");
+                    nextLink.innerHTML = ">";
+                    paginationContainer.appendChild(nextLink);
+                }
+
+                // Приховуємо лоадер і показуємо продукти з анімацією
+                loader.style.display = "none";
+                productsGrid.classList.add("loaded");
+                paginationContainer.classList.add("loaded");
+
             } catch (error) {
                 console.error("Помилка завантаження товарів:", error);
+                loader.style.display = "none";
+                skeletonTitle.style.display = "none";
+                categoryTitle.textContent = "Помилка завантаження";
+                categoryTitle.classList.add("loaded");
                 productsGrid.innerHTML = '<p class="error-message">Не вдалося завантажити товари. Спробуйте пізніше.</p>';
+                productsGrid.classList.add("loaded");
             }
         });
-        
-        // Функція для створення пагінації
-        function createPagination(currentPage, totalPages, categoryId, subcategoryId) {
-            const paginationContainer = document.getElementById("pagination");
-            paginationContainer.innerHTML = '';
-            
-            if (totalPages <= 1) {
-                return; // Не показуємо пагінацію, якщо є лише одна сторінка
-            }
-            
-            // Функція для створення URL сторінки
-            function getPageUrl(page) {
-                const url = new URL(window.location.href);
-                url.searchParams.set('page', page);
-                return url.toString();
-            }
-            
-            // Функція для створення елемента пагінації
-            function createPaginationItem(page, isActive = false) {
-                const item = document.createElement('a');
-                item.href = getPageUrl(page);
-                item.textContent = page;
-                item.classList.add('pagination-item');
-                if (isActive) {
-                    item.classList.add('active');
-                }
-                return item;
-            }
-            
-            // Додаємо кнопку "Попередня"
-            if (currentPage > 1) {
-                const prevButton = document.createElement('a');
-                prevButton.href = getPageUrl(currentPage - 1);
-                prevButton.classList.add('pagination-arrow');
-                prevButton.innerHTML = '<i class="fas fa-chevron-left"></i>';
-                paginationContainer.appendChild(prevButton);
-            }
-            
-            // Визначаємо, які сторінки показувати
-            let startPage = Math.max(1, currentPage - 2);
-            let endPage = Math.min(totalPages, currentPage + 2);
-            
-            // Забезпечуємо, щоб було показано не менше 5 сторінок (якщо вони є)
-            if (endPage - startPage < 4 && totalPages > 5) {
-                if (currentPage < totalPages / 2) {
-                    endPage = Math.min(startPage + 4, totalPages);
-                } else {
-                    startPage = Math.max(endPage - 4, 1);
-                }
-            }
-            
-            // Додаємо першу сторінку
-            if (startPage > 1) {
-                paginationContainer.appendChild(createPaginationItem(1));
-                
-                // Додаємо три крапки, якщо потрібно
-                if (startPage > 2) {
-                    const dots = document.createElement('span');
-                    dots.textContent = '...';
-                    dots.classList.add('pagination-dots');
-                    paginationContainer.appendChild(dots);
-                }
-            }
-            
-            // Додаємо сторінки від startPage до endPage
-            for (let i = startPage; i <= endPage; i++) {
-                paginationContainer.appendChild(createPaginationItem(i, i === currentPage));
-            }
-            
-            // Додаємо останню сторінку
-            if (endPage < totalPages) {
-                // Додаємо три крапки, якщо потрібно
-                if (endPage < totalPages - 1) {
-                    const dots = document.createElement('span');
-                    dots.textContent = '...';
-                    dots.classList.add('pagination-dots');
-                    paginationContainer.appendChild(dots);
-                }
-                
-                paginationContainer.appendChild(createPaginationItem(totalPages));
-            }
-            
-            // Додаємо кнопку "Наступна"
-            if (currentPage < totalPages) {
-                const nextButton = document.createElement('a');
-                nextButton.href = getPageUrl(currentPage + 1);
-                nextButton.classList.add('pagination-arrow');
-                nextButton.innerHTML = '<i class="fas fa-chevron-right"></i>';
-                paginationContainer.appendChild(nextButton);
-            }
-        }
-        
-        // Функція для завантаження категорій
-        async function loadCategories() {
-            try {
-                const response = await fetch("http://localhost:3000/api/categories");
-                if (!response.ok) {
-                    throw new Error(`HTTP помилка: ${response.status}`);
-                }
-                
-                const categories = await response.json();
-                const dynamicCatalog = document.getElementById("dynamic-catalog");
-                const mobileDynamicCatalog = document.getElementById("mobile-dynamic-catalog");
-                
-                if (!dynamicCatalog || !mobileDynamicCatalog) {
-                    console.error("Не знайдено контейнери для каталогу");
-                    return;
-                }
-                
-                // Очищаємо контейнери
-                dynamicCatalog.innerHTML = '';
-                mobileDynamicCatalog.innerHTML = '';
-                
-                // Додаємо категорії до десктопного меню
-                categories.forEach(category => {
-                    const categoryLink = document.createElement("a");
-                    categoryLink.href = `category-products.html?categoryId=${category.id}`;
-                    categoryLink.textContent = category.name;
-                    dynamicCatalog.appendChild(categoryLink);
-                    
-                    // Додаємо категорії до мобільного меню
-                    const mobileItem = document.createElement("li");
-                    const mobileCategoryLink = document.createElement("a");
-                    mobileCategoryLink.href = `category-products.html?categoryId=${category.id}`;
-                    mobileCategoryLink.textContent = category.name;
-                    mobileItem.appendChild(mobileCategoryLink);
-                    mobileDynamicCatalog.appendChild(mobileItem);
-                    
-                    // Додаємо підкатегорії, якщо вони є
-                    if (category.subcategories && category.subcategories.length > 0) {
-                        category.subcategories.forEach(subcategory => {
-                            const subcategoryLink = document.createElement("a");
-                            subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
-                            subcategoryLink.textContent = `- ${subcategory.name}`;
-                            subcategoryLink.style.paddingLeft = "20px";
-                            dynamicCatalog.appendChild(subcategoryLink);
-                            
-                            // Додаємо підкатегорії до мобільного меню
-                            const mobileSubItem = document.createElement("li");
-                            const mobileSubcategoryLink = document.createElement("a");
-                            mobileSubcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
-                            mobileSubcategoryLink.textContent = `- ${subcategory.name}`;
-                            mobileSubcategoryLink.style.paddingLeft = "20px";
-                            mobileSubItem.appendChild(mobileSubcategoryLink);
-                            mobileDynamicCatalog.appendChild(mobileSubItem);
-                        });
-                    }
-                });
-                
-            } catch (error) {
-                console.error("Помилка завантаження категорій:", error);
-            }
-        }
     </script>
 </body>
 </html>

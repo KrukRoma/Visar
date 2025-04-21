@@ -123,7 +123,7 @@
             font-size: 18px;
             color: #333;
             font-weight: 600;
-            height: 66px; /* Збільшено висоту для мобільної версії */
+            height: 66px;
             overflow: hidden;
             display: -webkit-box;
             -webkit-box-orient: vertical;
@@ -131,8 +131,8 @@
         
         @media (max-width: 576px) {
             .product-info h3 {
-                font-size: 16px; /* Менший шрифт для мобільних */
-                height: 60px; /* Трохи менша висота, але достатня для 3 рядків */
+                font-size: 16px;
+                height: 60px;
             }
         }
         
@@ -286,11 +286,101 @@
             color: #ffffff;
         }
 
-        /* Виправлення кольору номера телефону в мобільному меню */
         .mobile-contact-info .phone,
         .mobile-contact-info .phone a,
         .mobile-contact-info .phone i {
-            color: #ffffff; /* Білий колір для номера телефону */
+            color: #ffffff;
+        }
+
+        /* Стили для модального вікна */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 2000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .modal-content {
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        .modal-content .close-btn {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            font-size: 20px;
+            cursor: pointer;
+            color: #333;
+        }
+
+        .modal-content h3 {
+            font-size: 20px;
+            margin-bottom: 15px;
+            color: #333;
+        }
+
+        .modal-content .phone {
+            margin-bottom: 20px;
+            font-size: 18px;
+        }
+
+        .modal-content .phone a {
+            color: #e63946;
+            text-decoration: none;
+        }
+
+        .modal-content .social-icons {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .modal-content .social-icons a {
+            font-size: 24px;
+            color: #333;
+            transition: color 0.3s;
+        }
+
+        .modal-content .social-icons a:hover {
+            color: #e63946;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.8); }
+            to { opacity: 1; transform: scale(1); }
+        }
+
+        @media (max-width: 480px) {
+            .modal-content {
+                width: 95%;
+                padding: 15px;
+            }
+
+            .modal-content h3 {
+                font-size: 18px;
+            }
+
+            .modal-content .phone {
+                font-size: 16px;
+            }
+
+            .modal-content .social-icons a {
+                font-size: 20px;
+            }
         }
     </style>
 </head>
@@ -303,7 +393,7 @@
             <nav>
                 <ul class="main-menu">
                     <li><a href="visar.html#why-need" class="info-link">Корисна інформація</a></li>
-                    <li><a href="#">Контакти</a></li>
+                    <li><a href="#" class="contact-link">Контакти</a></li>
                     <li class="dropdown">
                         <a href="category-products.html" class="catalog-link dropdown-toggle">Каталог товарів <i class="fas fa-chevron-down"></i></a>
                         <div class="dropdown-menu" id="dynamic-catalog">
@@ -341,10 +431,28 @@
         </div>
         <ul class="mobile-menu-items">
             <li><a href="visar.html#why-need" class="info-link">Корисна інформація</a></li>
-            <li><a href="#">Контакти</a></li>
+            <li><a href="#" class="contact-link">Контакти</a></li>
             <li><a href="category-products.html" class="catalog-link">Каталог товарів</a></li>
         </ul>
         <div class="mobile-contact-info">
+            <div class="phone">
+                <i class="fas fa-phone"></i>
+                <a href="tel:+380968798833">+380 96 879 88 33</a>
+            </div>
+            <div class="social-icons">
+                <a href="https://www.instagram.com/dlab.usa/" target="_blank" class="instagram"><i class="fab fa-instagram"></i></a>
+                <a href="viber://chat?number=%2B380968798833" class="viber"><i class="fab fa-viber"></i></a>
+                <a href="https://t.me/+380968798833" target="_blank" class="telegram"><i class="fab fa-telegram"></i></a>
+                <a href="https://wa.me/380968798833" target="_blank" class="whatsapp"><i class="fab fa-whatsapp"></i></a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модальне вікно для контактів -->
+    <div class="modal" id="contact-modal">
+        <div class="modal-content">
+            <span class="close-btn">×</span>
+            <h3>Контакти</h3>
             <div class="phone">
                 <i class="fas fa-phone"></i>
                 <a href="tel:+380968798833">+380 96 879 88 33</a>
@@ -435,7 +543,6 @@
 
     <script src="visar.js"></script>
     <script>
-        // Захищаємо від множинного виклику loadCatalog
         let isCatalogLoaded = false;
 
         async function loadCatalog() {
@@ -454,7 +561,6 @@
                 }
                 const categories = await response.json();
 
-                // Очищаємо контейнер перед додаванням нових елементів
                 catalogContainer.innerHTML = '';
 
                 categories.forEach(category => {
@@ -511,7 +617,6 @@
             const paginationContainer = document.getElementById("pagination");
             const loader = document.getElementById("loader");
 
-            // Завантажуємо каталог один раз (тільки для десктопного меню)
             await loadCatalog();
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -619,7 +724,7 @@
                     price.classList.add("product-price");
                     price.textContent =
                         product.variants && product.variants.length > 0 && product.variants[0].price != null
-                            ? `${Number(product.variants[0].price).toFixed(2)} ₴`
+                            ? `${Number(product.variants[0].price).toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`
                             : "Ціна недоступна";
 
                     const viewButton = document.createElement("a");
@@ -727,7 +832,37 @@
                 productsGrid.innerHTML = '<p class="error-message">Не вдалося завантажити товари. Спробуйте пізніше.</p>';
                 productsGrid.classList.add("loaded");
             }
+
+            // Обробка модального вікна для контактів
+            const modal = document.getElementById('contact-modal');
+            const contactLinks = document.querySelectorAll('.contact-link');
+            const closeBtn = document.querySelector('.close-btn');
+
+            contactLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    modal.style.display = 'flex';
+                });
+            });
+
+            closeBtn.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+
+            document.addEventListener('keydown', (e) => {
+                if (e.key === 'Escape' && modal.style.display === 'flex') {
+                    modal.style.display = 'none';
+                }
+            });
         });
     </script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c9ccd1a23bf89',t:'MTc0NTIzNTY4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c9ccd1a23bf89',t:'MTc0NTIzNTY4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933f54c16baa138f',t:'MTc0NTI2NDE5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
 </html>

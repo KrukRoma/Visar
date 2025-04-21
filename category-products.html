@@ -11,13 +11,13 @@
         body {
             background-color: white;
             color: #333;
-            min-height: 100vh; /* Забезпечує мінімальну висоту сторінки */
+            min-height: 100vh;
             display: flex;
             flex-direction: column;
         }
         
         main {
-            flex: 1; /* Розширює основний контент, щоб футер залишався внизу */
+            flex: 1;
         }
         
         .category-products-section {
@@ -54,7 +54,7 @@
             margin-top: 30px;
             opacity: 0;
             transition: opacity 0.5s ease-in-out;
-            min-height: 600px; /* Резервуємо місце для продуктів */
+            min-height: 600px;
         }
         
         .products-grid.loaded {
@@ -123,10 +123,17 @@
             font-size: 18px;
             color: #333;
             font-weight: 600;
-            height: 44px;
+            height: 66px; /* Збільшено висоту для мобільної версії */
             overflow: hidden;
             display: -webkit-box;
             -webkit-box-orient: vertical;
+        }
+        
+        @media (max-width: 576px) {
+            .product-info h3 {
+                font-size: 16px; /* Менший шрифт для мобільних */
+                height: 60px; /* Трохи менша висота, але достатня для 3 рядків */
+            }
         }
         
         .product-price {
@@ -161,7 +168,6 @@
             margin: 40px 0;
         }
         
-        /* Стилі для пагінації */
         .pagination {
             display: flex;
             justify-content: center;
@@ -209,7 +215,6 @@
             font-size: 18px;
         }
         
-        /* Стилі для лоадера */
         .loader {
             display: flex;
             justify-content: center;
@@ -232,7 +237,6 @@
             100% { transform: rotate(360deg); }
         }
         
-        /* Стилі для скелетного лоадера */
         .skeleton-card {
             background-color: #fff;
             border-radius: 8px;
@@ -278,24 +282,30 @@
             100% { background-color: #e0e0e0; }
         }
         
-        /* Стилі для футера */
         .footer-content p {
-            color: #ffffff; /* Білий колір для тексту в футері */
+            color: #ffffff;
+        }
+
+        /* Виправлення кольору номера телефону в мобільному меню */
+        .mobile-contact-info .phone,
+        .mobile-contact-info .phone a,
+        .mobile-contact-info .phone i {
+            color: #ffffff; /* Білий колір для номера телефону */
         }
     </style>
 </head>
 <body>
     <header>
         <div class="container">
-            <a href="/" class="logo">
+            <a href="visar.html" class="logo">
                 <img src="images/VisarLogo.png" alt="VISAR Logo">
             </a>
             <nav>
                 <ul class="main-menu">
-                    <li><a href="#why-need" class="info-link">Корисна інформація</a></li>
+                    <li><a href="visar.html#why-need" class="info-link">Корисна інформація</a></li>
                     <li><a href="#">Контакти</a></li>
                     <li class="dropdown">
-                        <a href="#product-slider" class="catalog-link dropdown-toggle">Каталог товарів <i class="fas fa-chevron-down"></i></a>
+                        <a href="category-products.html" class="catalog-link dropdown-toggle">Каталог товарів <i class="fas fa-chevron-down"></i></a>
                         <div class="dropdown-menu" id="dynamic-catalog">
                             <!-- Категорії будуть завантажені динамічно -->
                         </div>
@@ -322,15 +332,17 @@
 
     <div class="mobile-menu">
         <div class="mobile-menu-header">
-            <a href="/" class="logo">
+            <a href="visar.html" class="logo">
                 <img src="https://www.visarppf.com/wp-content/uploads/2024/03/cropped-photo_2024-03-05_23-29-35-removebg-preview.png" alt="VISAR Logo">
             </a>
             <button class="mobile-menu-close">
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <ul class="mobile-menu-items" id="mobile-dynamic-catalog">
-            <!-- Категорії для мобільного меню будуть завантажені динамічно -->
+        <ul class="mobile-menu-items">
+            <li><a href="visar.html#why-need" class="info-link">Корисна інформація</a></li>
+            <li><a href="#">Контакти</a></li>
+            <li><a href="category-products.html" class="catalog-link">Каталог товарів</a></li>
         </ul>
         <div class="mobile-contact-info">
             <div class="phone">
@@ -423,6 +435,75 @@
 
     <script src="visar.js"></script>
     <script>
+        // Захищаємо від множинного виклику loadCatalog
+        let isCatalogLoaded = false;
+
+        async function loadCatalog() {
+            if (isCatalogLoaded) {
+                console.log("Каталог уже завантажено, пропускаємо повторне завантаження");
+                return;
+            }
+
+            const catalogContainer = document.getElementById("dynamic-catalog");
+
+            try {
+                console.log("Починаємо завантаження каталогу");
+                const response = await fetch("http://localhost:3000/api/categories");
+                if (!response.ok) {
+                    throw new Error(`HTTP помилка: ${response.status}`);
+                }
+                const categories = await response.json();
+
+                // Очищаємо контейнер перед додаванням нових елементів
+                catalogContainer.innerHTML = '';
+
+                categories.forEach(category => {
+                    const categoryItemDesktop = createCategoryItem(category);
+                    catalogContainer.appendChild(categoryItemDesktop);
+                });
+
+                isCatalogLoaded = true;
+                console.log("Каталог успішно завантажено");
+            } catch (error) {
+                console.error("Помилка завантаження каталогу:", error);
+                catalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
+            }
+        }
+
+        function createCategoryItem(category) {
+            const categoryItem = document.createElement("div");
+            categoryItem.classList.add("dropdown-item");
+
+            if (category.subcategories && category.subcategories.length > 0) {
+                categoryItem.classList.add("has-submenu");
+                const categoryLink = document.createElement("a");
+                categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                categoryLink.classList.add("submenu-toggle");
+                categoryLink.textContent = category.name;
+                categoryLink.innerHTML += ' <i class="fas fa-chevron-right"></i>';
+
+                const subMenu = document.createElement("div");
+                subMenu.classList.add("submenu");
+
+                category.subcategories.forEach(subcategory => {
+                    const subcategoryLink = document.createElement("a");
+                    subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
+                    subcategoryLink.textContent = subcategory.name;
+                    subMenu.appendChild(subcategoryLink);
+                });
+
+                categoryItem.appendChild(categoryLink);
+                categoryItem.appendChild(subMenu);
+            } else {
+                const categoryLink = document.createElement("a");
+                categoryLink.href = `category-products.html?categoryId=${category.id}`;
+                categoryLink.textContent = category.name;
+                categoryItem.appendChild(categoryLink);
+            }
+
+            return categoryItem;
+        }
+
         document.addEventListener("DOMContentLoaded", async () => {
             const categoryTitle = document.getElementById("category-title");
             const skeletonTitle = document.getElementById("skeleton-title");
@@ -430,101 +511,7 @@
             const paginationContainer = document.getElementById("pagination");
             const loader = document.getElementById("loader");
 
-            // Завантаження каталогу
-            const catalogContainer = document.getElementById("dynamic-catalog");
-            const mobileCatalogContainer = document.getElementById("mobile-dynamic-catalog");
-
-            async function loadCatalog() {
-                try {
-                    const response = await fetch("http://localhost:3000/api/categories");
-                    if (!response.ok) {
-                        throw new Error(`HTTP помилка: ${response.status}`);
-                    }
-                    const categories = await response.json();
-
-                    categories.forEach(category => {
-                        const categoryItemDesktop = createCategoryItem(category);
-                        const categoryItemMobile = createMobileCategoryItem(category);
-
-                        catalogContainer.appendChild(categoryItemDesktop);
-                        mobileCatalogContainer.appendChild(categoryItemMobile);
-                    });
-                } catch (error) {
-                    console.error("Помилка завантаження каталогу:", error);
-                    catalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
-                    mobileCatalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
-                }
-            }
-
-            function createCategoryItem(category) {
-                const categoryItem = document.createElement("div");
-                categoryItem.classList.add("dropdown-item");
-
-                if (category.subcategories && category.subcategories.length > 0) {
-                    categoryItem.classList.add("has-submenu");
-                    const categoryLink = document.createElement("a");
-                    categoryLink.href = `category-products.html?categoryId=${category.id}`;
-                    categoryLink.classList.add("submenu-toggle");
-                    categoryLink.textContent = category.name;
-                    categoryLink.innerHTML += ' <i class="fas fa-chevron-right"></i>';
-
-                    const subMenu = document.createElement("div");
-                    subMenu.classList.add("submenu");
-
-                    category.subcategories.forEach(subcategory => {
-                        const subcategoryLink = document.createElement("a");
-                        subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
-                        subcategoryLink.textContent = subcategory.name;
-                        subMenu.appendChild(subcategoryLink);
-                    });
-
-                    categoryItem.appendChild(categoryLink);
-                    categoryItem.appendChild(subMenu);
-                } else {
-                    const categoryLink = document.createElement("a");
-                    categoryLink.href = `category-products.html?categoryId=${category.id}`;
-                    categoryLink.textContent = category.name;
-                    categoryItem.appendChild(categoryLink);
-                }
-
-                return categoryItem;
-            }
-
-            function createMobileCategoryItem(category) {
-                const categoryItem = document.createElement("li");
-                categoryItem.classList.add("mobile-dropdown-item");
-
-                if (category.subcategories && category.subcategories.length > 0) {
-                    const categoryLink = document.createElement("a");
-                    categoryLink.href = `category-products.html?categoryId=${category.id}`;
-                    categoryLink.classList.add("mobile-submenu-toggle");
-                    categoryLink.textContent = category.name;
-                    categoryLink.innerHTML += ' <i class="fas fa-chevron-down"></i>';
-
-                    const subMenu = document.createElement("ul");
-                    subMenu.classList.add("mobile-submenu");
-
-                    category.subcategories.forEach(subcategory => {
-                        const subcategoryItem = document.createElement("li");
-                        const subcategoryLink = document.createElement("a");
-                        subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
-                        subcategoryLink.textContent = subcategory.name;
-                        subcategoryItem.appendChild(subcategoryLink);
-                        subMenu.appendChild(subcategoryItem);
-                    });
-
-                    categoryItem.appendChild(categoryLink);
-                    categoryItem.appendChild(subMenu);
-                } else {
-                    const categoryLink = document.createElement("a");
-                    categoryLink.href = `category-products.html?categoryId=${category.id}`;
-                    categoryLink.textContent = category.name;
-                    categoryItem.appendChild(categoryLink);
-                }
-
-                return categoryItem;
-            }
-
+            // Завантажуємо каталог один раз (тільки для десктопного меню)
             await loadCatalog();
 
             const urlParams = new URLSearchParams(window.location.search);
@@ -533,71 +520,62 @@
             const page = parseInt(urlParams.get("page")) || 1;
             const productsPerPage = 21;
 
-            if (!categoryId && !subcategoryId) {
-                loader.style.display = "none";
-                skeletonTitle.style.display = "none";
-                categoryTitle.textContent = "Категорію не вказано";
-                categoryTitle.classList.add("loaded");
-                productsGrid.innerHTML = '<p class="error-message">Категорію або підкатегорію не вказано.</p>';
-                productsGrid.classList.add("loaded");
-                return;
-            }
-
             try {
-                const categoriesResponse = await fetch("http://localhost:3000/api/categories");
-                if (!categoriesResponse.ok) {
-                    throw new Error(`HTTP помилка (категорії): ${categoriesResponse.status}`);
-                }
-                const categories = await categoriesResponse.json();
-
-                let categoryName = "Товари";
-                let filteredProducts = [];
-
                 const productsResponse = await fetch("http://localhost:3000/api/products");
                 if (!productsResponse.ok) {
                     throw new Error(`HTTP помилка (продукти): ${productsResponse.status}`);
                 }
                 const allProducts = await productsResponse.json();
 
-                if (categoryId) {
-                    const category = categories.find(cat => cat.id === parseInt(categoryId));
-                    if (!category) {
-                        loader.style.display = "none";
-                        skeletonTitle.style.display = "none";
-                        categoryTitle.textContent = "Категорію не знайдено";
-                        categoryTitle.classList.add("loaded");
-                        productsGrid.innerHTML = '<p class="error-message">Категорію не знайдено.</p>';
-                        productsGrid.classList.add("loaded");
-                        return;
+                let categoryName = "Всі товари";
+                let filteredProducts = allProducts;
+
+                if (categoryId || subcategoryId) {
+                    const categoriesResponse = await fetch("http://localhost:3000/api/categories");
+                    if (!categoriesResponse.ok) {
+                        throw new Error(`HTTP помилка (категорії): ${categoriesResponse.status}`);
                     }
-                    categoryName = category.name;
-                    filteredProducts = allProducts.filter(product =>
-                        product.category && parseInt(product.category.id) === parseInt(categoryId)
-                    );
-                } else if (subcategoryId) {
-                    let subcategory = null;
-                    for (const category of categories) {
-                        if (category.subcategories) {
-                            subcategory = category.subcategories.find(sub => sub.id === parseInt(subcategoryId));
-                            if (subcategory) break;
+                    const categories = await categoriesResponse.json();
+
+                    if (categoryId) {
+                        const category = categories.find(cat => cat.id === parseInt(categoryId));
+                        if (!category) {
+                            loader.style.display = "none";
+                            skeletonTitle.style.display = "none";
+                            categoryTitle.textContent = "Категорію не знайдено";
+                            categoryTitle.classList.add("loaded");
+                            productsGrid.innerHTML = '<p class="error-message">Категорію не знайдено.</p>';
+                            productsGrid.classList.add("loaded");
+                            return;
                         }
+                        categoryName = category.name;
+                        filteredProducts = allProducts.filter(product =>
+                            product.category && parseInt(product.category.id) === parseInt(categoryId)
+                        );
+                    } else if (subcategoryId) {
+                        let subcategory = null;
+                        for (const category of categories) {
+                            if (category.subcategories) {
+                                subcategory = category.subcategories.find(sub => sub.id === parseInt(subcategoryId));
+                                if (subcategory) break;
+                            }
+                        }
+                        if (!subcategory) {
+                            loader.style.display = "none";
+                            skeletonTitle.style.display = "none";
+                            categoryTitle.textContent = "Підкатегорію не знайдено";
+                            categoryTitle.classList.add("loaded");
+                            productsGrid.innerHTML = '<p class="error-message">Підкатегорію не знайдено.</p>';
+                            productsGrid.classList.add("loaded");
+                            return;
+                        }
+                        categoryName = subcategory.name;
+                        filteredProducts = allProducts.filter(product =>
+                            product.subcategory && parseInt(product.subcategory.id) === parseInt(subcategoryId)
+                        );
                     }
-                    if (!subcategory) {
-                        loader.style.display = "none";
-                        skeletonTitle.style.display = "none";
-                        categoryTitle.textContent = "Підкатегорію не знайдено";
-                        categoryTitle.classList.add("loaded");
-                        productsGrid.innerHTML = '<p class="error-message">Підкатегорію не знайдено.</p>';
-                        productsGrid.classList.add("loaded");
-                        return;
-                    }
-                    categoryName = subcategory.name;
-                    filteredProducts = allProducts.filter(product =>
-                        product.subcategory && parseInt(product.subcategory.id) === parseInt(subcategoryId)
-                    );
                 }
 
-                // Оновлюємо заголовок і прибираємо скелетний лоадер
                 categoryTitle.textContent = categoryName;
                 skeletonTitle.style.display = "none";
                 categoryTitle.classList.add("loaded");
@@ -609,13 +587,11 @@
                     return;
                 }
 
-                // Пагінація
                 const totalPages = Math.ceil(filteredProducts.length / productsPerPage);
                 const startIndex = (page - 1) * productsPerPage;
                 const endIndex = startIndex + productsPerPage;
                 const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
-                // Очищаємо скелетний лоадер
                 productsGrid.innerHTML = '';
                 currentProducts.forEach(product => {
                     const productCard = document.createElement("div");
@@ -669,11 +645,12 @@
                     });
                 });
 
-                // Генерація пагінації
                 paginationContainer.innerHTML = '';
                 const baseUrl = categoryId 
                     ? `category-products.html?categoryId=${categoryId}` 
-                    : `category-products.html?subcategoryId=${subcategoryId}`;
+                    : subcategoryId 
+                    ? `category-products.html?subcategoryId=${subcategoryId}` 
+                    : `category-products.html`;
 
                 if (page > 1) {
                     const prevLink = document.createElement("a");
@@ -737,7 +714,6 @@
                     paginationContainer.appendChild(nextLink);
                 }
 
-                // Приховуємо лоадер і показуємо продукти з анімацією
                 loader.style.display = "none";
                 productsGrid.classList.add("loaded");
                 paginationContainer.classList.add("loaded");
@@ -753,5 +729,5 @@
             }
         });
     </script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c9ccd1a23bf89',t:'MTc0NTIzNTY4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

@@ -11,7 +11,7 @@
 <body>
     <header>
         <div class="container">
-            <a href="/" class="logo">
+            <a href="#" class="logo" id="top-logo">
                 <img src="images/VisarLogo.png" alt="VISAR Logo">
             </a>
             <nav>
@@ -46,15 +46,17 @@
 
     <div class="mobile-menu">
         <div class="mobile-menu-header">
-            <a href="/" class="logo">
+            <a href="#" class="logo" id="mobile-top-logo">
                 <img src="https://www.visarppf.com/wp-content/uploads/2024/03/cropped-photo_2024-03-05_23-29-35-removebg-preview.png" alt="VISAR Logo">
             </a>
             <button class="mobile-menu-close">
                 <i class="fas fa-times"></i>
             </button>
         </div>
-        <ul class="mobile-menu-items" id="mobile-dynamic-catalog">
-            <!-- Категорії для мобільного меню будуть завантажені динамічно -->
+        <ul class="mobile-menu-items">
+            <li><a href="#why-need" class="info-link">Корисна інформація</a></li>
+            <li><a href="#">Контакти</a></li>
+            <li><a href="#product-slider" class="catalog-link">Каталог товарів</a></li>
         </ul>
         <div class="mobile-contact-info">
             <div class="phone">
@@ -84,18 +86,6 @@
             <div class="hero-overlay"></div>
             <div class="hero-background">
                 <img src="/images/FonImage.jpg" alt="Автомобіль з плівкою VISAR" class="hero-car-image">
-            </div>
-        </section>
-
-        <!-- Product Slider Section -->
-        <section id="product-slider" class="product-slider">
-            <div class="slider-container">
-                <div class="slider-track">
-                    <!-- Продукти будуть завантажені динамічно -->
-                </div>
-            </div>
-            <div class="catalog-btn-container">
-                <a href="#" class="btn-full-catalog" id="toggle-catalog">ПОВНИЙ КАТАЛОГ</a>
             </div>
         </section>
 
@@ -188,6 +178,14 @@
                 <h2><a href="#product-slider" class="catalog-link">КАТАЛОГ ПЛІВОК</a></h2>
                 <p>Плівка для захисту лакофарбового покриття дарує Вам душевний спокій, забезпечуючи міцний, довговічний шар захисту, який захищає поверхню Вашого автомобіля від широкого спектру потенційних небезпек, гарантуючи, що воно залишиться у відмінному стані на довгі роки.</p>
             </div>
+        </section>
+
+        <!-- Video Section -->
+        <section id="product-slider" class="product-slider">
+            <div class="video-container">
+                <iframe width="100%" height="500" src="https://www.youtube.com/embed/_Na3VDBCX_8" title="VISAR Protective Film" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+            </div>
+            <!-- Кнопка "ПОВНИЙ КАТАЛОГ" видалена -->
         </section>
 
         <!-- Specialists Section -->

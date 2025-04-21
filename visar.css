@@ -182,7 +182,7 @@ nav {
 .dropdown-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: space-between; /* За замовчуванням для пунктів з підменю */
   height: 50px;
   padding: 0 20px;
   color: var(--light-color);
@@ -193,6 +193,12 @@ nav {
   font-weight: 500;
 }
 
+/* Новий стиль для пунктів без підменю */
+.dropdown-item:not(.has-submenu) {
+  justify-content: center; /* Вирівнюємо по центру, якщо немає підменю */
+}
+
+/* Залишаємо решту стилів без змін */
 .dropdown-item:last-child {
   border-bottom: none;
 }
@@ -322,6 +328,7 @@ nav {
   color: var(--light-color);
   font-size: 14px;
   flex-shrink: 0;
+  margin-right: 60px; /* Збільшено відступ, щоб перемістити номер ще лівіше */
 }
 
 .phone,
@@ -412,6 +419,11 @@ nav {
   display: block;
   padding: 10px 0;
   border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  transition: var(--transition);
+}
+
+.mobile-menu-items li a:hover {
+  color: var(--primary-color);
 }
 
 .mobile-dropdown-toggle {
@@ -672,23 +684,43 @@ nav {
   border-color: var(--primary-color);
 }
 
-.catalog-btn-container {
-  text-align: center;
-  margin-top: 30px;
+/* Video container styles */
+.video-container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto 30px;
+  position: relative;
+  padding-bottom: 20px;
 }
 
-.btn-full-catalog {
-  display: inline-block;
-  background-color: var(--primary-color);
-  color: var(--light-color);
-  padding: 12px 30px;
-  border-radius: 4px;
-  font-weight: 600;
-  transition: var(--transition);
+.video-container iframe {
+  border-radius: 10px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 100%;
+  height: 500px;
 }
 
-.btn-full-catalog:hover {
-  background-color: #cc0000;
+/* Responsive video for mobile */
+@media (max-width: 768px) {
+  .video-container iframe {
+    height: 300px;
+  }
+  
+  .video-container {
+    padding-left: 15px;
+    padding-right: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .video-container iframe {
+    height: 250px;
+  }
+  
+  .video-container {
+    padding-left: 20px;
+    padding-right: 20px;
+  }
 }
 
 /* Self-Healing Film Section */
@@ -1201,8 +1233,7 @@ footer {
   header,
   footer,
   .hero-buttons,
-  .btn-view-cart,
-  .btn-full-catalog {
+  .btn-view-cart {
     display: none;
   }
 
@@ -1269,11 +1300,6 @@ footer {
   .product-slider.full-catalog .slider-track {
     grid-template-columns: repeat(1, 1fr);
   }
-}
-
-/* Стилі для кнопки переключення каталогу */
-.btn-full-catalog.active {
-  background-color: #cc0000;
 }
 
 /* Анімації для випадаючого меню */

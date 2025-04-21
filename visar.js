@@ -2,11 +2,46 @@ document.addEventListener("DOMContentLoaded", () => {
   const catalogContainer = document.getElementById("dynamic-catalog");
   const mobileCatalogContainer = document.getElementById("mobile-dynamic-catalog");
   const productSlider = document.querySelector(".slider-track");
-  const toggleCatalogButton = document.getElementById("toggle-catalog");
+  
+  // Logo click to scroll to top
+  const topLogo = document.getElementById("top-logo");
+  const mobileLogo = document.getElementById("mobile-top-logo");
+  
+  if (topLogo) {
+    topLogo.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+    });
+  }
+  
+  if (mobileLogo) {
+    mobileLogo.addEventListener("click", (e) => {
+      e.preventDefault();
+      window.scrollTo({
+        top: 0,
+        behavior: "smooth"
+      });
+      // Close mobile menu when clicking logo
+      const mobileMenu = document.querySelector(".mobile-menu");
+      if (mobileMenu) {
+        mobileMenu.classList.remove("active");
+        document.body.classList.remove("mobile-menu-open");
+      }
+    });
+  }
 
   // Функція для завантаження категорій та підкатегорій
   async function loadCatalog() {
     try {
+      // Перевіряємо, чи існують контейнери для категорій
+      if (!catalogContainer && !mobileCatalogContainer) {
+        console.log("Контейнери для категорій не знайдено, пропускаємо завантаження каталогу");
+        return;
+      }
+
       const response = await fetch("http://localhost:3000/api/categories");
       console.log("Статус відповіді каталогу:", response.status, response.statusText);
       if (!response.ok) {
@@ -16,16 +51,24 @@ document.addEventListener("DOMContentLoaded", () => {
       console.log("Отримані категорії:", categories);
 
       categories.forEach(category => {
-        const categoryItemDesktop = createCategoryItem(category);
-        const categoryItemMobile = createMobileCategoryItem(category);
-
-        catalogContainer.appendChild(categoryItemDesktop);
-        mobileCatalogContainer.appendChild(categoryItemMobile);
+        if (catalogContainer) {
+          const categoryItemDesktop = createCategoryItem(category);
+          catalogContainer.appendChild(categoryItemDesktop);
+        }
+        
+        if (mobileCatalogContainer) {
+          const categoryItemMobile = createMobileCategoryItem(category);
+          mobileCatalogContainer.appendChild(categoryItemMobile);
+        }
       });
     } catch (error) {
       console.error("Помилка завантаження каталогу:", error);
-      catalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
-      mobileCatalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
+      if (catalogContainer) {
+        catalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
+      }
+      if (mobileCatalogContainer) {
+        mobileCatalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
+      }
     }
   }
 
@@ -103,6 +146,12 @@ document.addEventListener("DOMContentLoaded", () => {
   // Функція для завантаження продуктів
   async function loadProducts() {
     try {
+      // Перевіряємо, чи існує елемент slider-track
+      if (!productSlider) {
+        console.log("Елемент slider-track не знайдено, пропускаємо завантаження продуктів");
+        return;
+      }
+
       const response = await fetch("http://localhost:3000/api/products");
       console.log("Статус відповіді продуктів:", response.status, response.statusText);
       if (!response.ok) {
@@ -166,28 +215,13 @@ document.addEventListener("DOMContentLoaded", () => {
           }
         });
       });
-
-      updateCatalogButton();
     } catch (error) {
       console.error("Помилка завантаження продуктів:", error);
-      productSlider.innerHTML = "<p>Не вдалося завантажити продукти. Спробуйте пізніше.</p>";
+      if (productSlider) {
+        productSlider.innerHTML = "<p>Не вдалося завантажити продукти. Спробуйте пізніше.</p>";
+      }
     }
   }
-
-  // Функція для оновлення стану кнопки "Повний каталог"
-  function updateCatalogButton() {
-    const isFullCatalog = productSlider.closest(".product-slider").classList.contains("full-catalog");
-    toggleCatalogButton.textContent = isFullCatalog ? "СКОРОТИТИ КАТАЛОГ" : "ПОВНИЙ КАТАЛОГ";
-    toggleCatalogButton.classList.toggle("active", isFullCatalog);
-  }
-
-  // Обробник для кнопки "Повний каталог"
-  toggleCatalogButton.addEventListener("click", (e) => {
-    e.preventDefault();
-    const productSliderSection = productSlider.closest(".product-slider");
-    productSliderSection.classList.toggle("full-catalog");
-    updateCatalogButton();
-  });
 
   // Завантаження каталогу та продуктів
   loadCatalog();
@@ -197,32 +231,54 @@ document.addEventListener("DOMContentLoaded", () => {
   const mobileMenuToggle = document.querySelector(".mobile-menu-toggle");
   const mobileMenuClose = document.querySelector(".mobile-menu-close");
   const mobileMenu = document.querySelector(".mobile-menu");
+  const mobileMenuItems = document.querySelectorAll(".mobile-menu-items a");
 
-  if (mobileMenuToggle) {
+  if (mobileMenuToggle && mobileMenu) {
     mobileMenuToggle.addEventListener("click", () => {
       mobileMenu.classList.add("active");
       document.body.classList.add("mobile-menu-open");
     });
   }
 
-  if (mobileMenuClose) {
+  if (mobileMenuClose && mobileMenu) {
     mobileMenuClose.addEventListener("click", () => {
       mobileMenu.classList.remove("active");
       document.body.classList.remove("mobile-menu-open");
     });
   }
 
+  // Close mobile menu when clicking on menu items
+  if (mobileMenu) {
+    mobileMenuItems.forEach(item => {
+      item.addEventListener("click", () => {
+        mobileMenu.classList.remove("active");
+        document.body.classList.remove("mobile-menu-open");
+      });
+    });
+  }
+
   // Закриття мобільного меню при кліку поза ним
-  document.addEventListener("click", (e) => {
-    if (!e.target.closest(".mobile-menu") && !e.target.closest(".mobile-menu-toggle")) {
-      mobileMenu.classList.remove("active");
-      document.body.classList.remove("mobile-menu-open");
-    }
+  if (mobileMenu) {
+    document.addEventListener("click", (e) => {
+      if (!e.target.closest(".mobile-menu") && !e.target.closest(".mobile-menu-toggle")) {
+        mobileMenu.classList.remove("active");
+        document.body.classList.remove("mobile-menu-open");
+      }
+    });
+  }
+
+  // Додаємо обробники подій для мобільних підменю
+  document.querySelectorAll(".mobile-submenu-toggle").forEach(toggle => {
+    toggle.addEventListener("click", function(e) {
+      e.preventDefault();
+      const parent = this.closest(".mobile-dropdown-item");
+      parent.classList.toggle("active");
+    });
   });
 
   // Анімація для кнопок при наведенні
   const buttons = document.querySelectorAll(
-    ".btn-catalog, .btn-contact, .btn-view-cart, .btn-add-to-cart, .btn-full-catalog, .btn-view"
+    ".btn-catalog, .btn-contact, .btn-view-cart, .btn-add-to-cart, .btn-view"
   );
 
   buttons.forEach((button) => {
@@ -238,11 +294,10 @@ document.addEventListener("DOMContentLoaded", () => {
   // Гладка прокрутка для якірних посилань
   document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
     anchor.addEventListener("click", function (e) {
-      e.preventDefault();
-
       const targetId = this.getAttribute("href");
       if (targetId === "#") return;
-
+      
+      e.preventDefault();
       const targetElement = document.querySelector(targetId);
 
       if (targetElement) {
@@ -254,7 +309,28 @@ document.addEventListener("DOMContentLoaded", () => {
           top: targetPosition,
           behavior: "smooth",
         });
+        
+        // Close mobile menu after clicking a link
+        if (mobileMenu && mobileMenu.classList.contains("active")) {
+          mobileMenu.classList.remove("active");
+          document.body.classList.remove("mobile-menu-open");
+        }
       }
     });
   });
+
+  // Ініціалізація YouTube API для відео (якщо є відео на сторінці)
+  const videoContainer = document.querySelector(".video-container");
+  if (videoContainer) {
+    // Додаємо клас для відео, щоб показати, що воно завантажується
+    videoContainer.classList.add("loading");
+    
+    // Коли відео завантажиться, видаляємо клас loading
+    const videoIframe = videoContainer.querySelector("iframe");
+    if (videoIframe) {
+      videoIframe.addEventListener("load", () => {
+        videoContainer.classList.remove("loading");
+      });
+    }
+  }
 });

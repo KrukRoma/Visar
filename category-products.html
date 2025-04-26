@@ -722,10 +722,29 @@
 
                     const price = document.createElement("div");
                     price.classList.add("product-price");
-                    price.textContent =
-                        product.variants && product.variants.length > 0 && product.variants[0].price != null
-                            ? `${Number(product.variants[0].price).toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`
-                            : "Ціна недоступна";
+
+                    // Обробка цін для відображення діапазону
+                    if (product.variants && product.variants.length > 0) {
+                        const prices = product.variants
+                            .filter(variant => variant.price != null)
+                            .map(variant => parseFloat(variant.price));
+                        
+                        if (prices.length > 0) {
+                            const minPrice = Math.min(...prices);
+                            const maxPrice = Math.max(...prices);
+                            if (minPrice === maxPrice) {
+                                // Якщо всі ціни однакові, показуємо одну ціну
+                                price.textContent = `${minPrice.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+                            } else {
+                                // Якщо ціни різні, показуємо діапазон
+                                price.textContent = `${minPrice.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} – ${maxPrice.toLocaleString('uk-UA', { minimumFractionDigits: 2 })} ₴`;
+                            }
+                        } else {
+                            price.textContent = "Ціна недоступна";
+                        }
+                    } else {
+                        price.textContent = "Ціна недоступна";
+                    }
 
                     const viewButton = document.createElement("a");
                     viewButton.href = `product-details.html?id=${product.id}`;
@@ -864,5 +883,5 @@
     </script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c9ccd1a23bf89',t:'MTc0NTIzNTY4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933f54c16baa138f',t:'MTc0NTI2NDE5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-</body>
+<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9368717e8b43d9f5',t:'MTc0NTY5NTI4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
 </html>

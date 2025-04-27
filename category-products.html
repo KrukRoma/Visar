@@ -423,7 +423,7 @@
     <div class="mobile-menu">
         <div class="mobile-menu-header">
             <a href="visar.html" class="logo">
-                <img src="https://www.visarppf.com/wp-content/uploads/2024/03/cropped-photo_2024-03-05_23-29-35-removebg-preview.png" alt="VISAR Logo">
+                <img src="HTTPS://www.visarppf.com/wp-content/uploads/2024/03/cropped-photo_2024-03-05_23-29-35-removebg-preview.png" alt="VISAR Logo">
             </a>
             <button class="mobile-menu-close">
                 <i class="fas fa-times"></i>
@@ -778,7 +778,7 @@
 
                 if (page > 1) {
                     const prevLink = document.createElement("a");
-                    prevLink.href = `${baseUrl}&page=${page - 1}`;
+                    prevLink.href = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=${page - 1}`;
                     prevLink.classList.add("arrow");
                     prevLink.innerHTML = "<";
                     paginationContainer.appendChild(prevLink);
@@ -794,7 +794,7 @@
 
                 if (startPage > 1) {
                     const firstPage = document.createElement("a");
-                    firstPage.href = `${baseUrl}&page=1`;
+                    firstPage.href = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=1`;
                     firstPage.textContent = "1";
                     paginationContainer.appendChild(firstPage);
 
@@ -808,7 +808,7 @@
 
                 for (let i = startPage; i <= endPage; i++) {
                     const pageLink = document.createElement("a");
-                    pageLink.href = `${baseUrl}&page=${i}`;
+                    pageLink.href = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=${i}`;
                     pageLink.textContent = i;
                     if (i === page) {
                         pageLink.classList.add("active");
@@ -825,14 +825,14 @@
                     }
 
                     const lastPage = document.createElement("a");
-                    lastPage.href = `${baseUrl}&page=${totalPages}`;
+                    lastPage.href = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=${totalPages}`;
                     lastPage.textContent = totalPages;
                     paginationContainer.appendChild(lastPage);
                 }
 
                 if (page < totalPages) {
                     const nextLink = document.createElement("a");
-                    nextLink.href = `${baseUrl}&page=${page + 1}`;
+                    nextLink.href = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=${page + 1}`;
                     nextLink.classList.add("arrow");
                     nextLink.innerHTML = ">";
                     paginationContainer.appendChild(nextLink);
@@ -879,9 +879,68 @@
                     modal.style.display = 'none';
                 }
             });
+            
         });
     </script>
+    
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c9ccd1a23bf89',t:'MTc0NTIzNTY4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933f54c16baa138f',t:'MTc0NTI2NDE5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
-<script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9368717e8b43d9f5',t:'MTc0NTY5NTI4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9368717e8b43d9f5',t:'MTc0NTY5NTI4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+    <script>
+        // Зупиняємо автоскрол браузера
+        // Зупиняємо автоскрол браузера
+if ('scrollRestoration' in history) {
+    history.scrollRestoration = 'manual';
+}
+
+// Зберігаємо скрол перед виходом лише для поточної категорії
+window.addEventListener("beforeunload", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get("categoryId");
+    const subcategoryId = urlParams.get("subcategoryId");
+    const categoryKey = categoryId ? `category-${categoryId}` : subcategoryId ? `subcategory-${subcategoryId}` : "all-products";
+
+    // Очищаємо всі попередні збережені позиції скролу
+    Object.keys(sessionStorage).forEach(key => {
+        if (key.startsWith('savedScrollPosition-')) {
+            sessionStorage.removeItem(key);
+        }
+    });
+
+    // Зберігаємо нову позицію скролу
+    sessionStorage.setItem(`savedScrollPosition-${categoryKey}`, window.scrollY);
+});
+
+// Відновлюємо скрол після завантаження контенту
+document.addEventListener("DOMContentLoaded", () => {
+    const observer = new MutationObserver(() => {
+        const productsGrid = document.getElementById('products-grid');
+        if (productsGrid && productsGrid.classList.contains('loaded')) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryId = urlParams.get("categoryId");
+            const subcategoryId = urlParams.get("subcategoryId");
+            const categoryKey = categoryId ? `category-${categoryId}` : subcategoryId ? `subcategory-${subcategoryId}` : "all-products";
+
+            const savedScroll = sessionStorage.getItem(`savedScrollPosition-${categoryKey}`);
+            if (savedScroll !== null) {
+                // Відновлюємо позицію скролу
+                document.documentElement.style.scrollBehavior = "auto";
+                window.scrollTo(0, parseInt(savedScroll, 10));
+                // Не видаляємо збережену позицію, щоб вона залишилася для повторного повернення
+                setTimeout(() => {
+                    document.documentElement.style.scrollBehavior = "";
+                }, 100);
+            } else {
+                // Прокручуємо до початку, якщо категорія нова
+                window.scrollTo(0, 0);
+            }
+            observer.disconnect();
+        }
+    });
+    observer.observe(document.body, { childList: true, subtree: true });
+});
+    </script>
+                  
+    <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'936e207bacd8bf91',t:'MTc0NTc1NDg4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
+</body>
 </html>

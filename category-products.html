@@ -359,6 +359,15 @@
             color: #e63946;
         }
 
+        .modal-content .social-icons a:hover {
+    color: #333 !important;
+    opacity: 1 !important;
+}
+.social-icons a:hover {
+    color: #333 !important;
+    opacity: 1 !important;
+}
+
         @keyframes fadeIn {
             from { opacity: 0; transform: scale(0.8); }
             to { opacity: 1; transform: scale(1); }
@@ -887,58 +896,67 @@
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933f54c16baa138f',t:'MTc0NTI2NDE5NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'9368717e8b43d9f5',t:'MTc0NTY5NTI4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
     <script>
-        // Зупиняємо автоскрол браузера
-        // Зупиняємо автоскрол браузера
-if ('scrollRestoration' in history) {
-    history.scrollRestoration = 'manual';
-}
-
-// Зберігаємо скрол перед виходом лише для поточної категорії
-window.addEventListener("beforeunload", () => {
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryId = urlParams.get("categoryId");
-    const subcategoryId = urlParams.get("subcategoryId");
-    const categoryKey = categoryId ? `category-${categoryId}` : subcategoryId ? `subcategory-${subcategoryId}` : "all-products";
-
-    // Очищаємо всі попередні збережені позиції скролу
-    Object.keys(sessionStorage).forEach(key => {
-        if (key.startsWith('savedScrollPosition-')) {
-            sessionStorage.removeItem(key);
+        // Новий код для керування скролінгом
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
         }
-    });
-
-    // Зберігаємо нову позицію скролу
-    sessionStorage.setItem(`savedScrollPosition-${categoryKey}`, window.scrollY);
-});
-
-// Відновлюємо скрол після завантаження контенту
-document.addEventListener("DOMContentLoaded", () => {
-    const observer = new MutationObserver(() => {
-        const productsGrid = document.getElementById('products-grid');
-        if (productsGrid && productsGrid.classList.contains('loaded')) {
+    
+        window.addEventListener("beforeunload", () => {
             const urlParams = new URLSearchParams(window.location.search);
             const categoryId = urlParams.get("categoryId");
             const subcategoryId = urlParams.get("subcategoryId");
+            const page = urlParams.get("page") || "1";
             const categoryKey = categoryId ? `category-${categoryId}` : subcategoryId ? `subcategory-${subcategoryId}` : "all-products";
-
-            const savedScroll = sessionStorage.getItem(`savedScrollPosition-${categoryKey}`);
-            if (savedScroll !== null) {
-                // Відновлюємо позицію скролу
-                document.documentElement.style.scrollBehavior = "auto";
-                window.scrollTo(0, parseInt(savedScroll, 10));
-                // Не видаляємо збережену позицію, щоб вона залишилася для повторного повернення
-                setTimeout(() => {
-                    document.documentElement.style.scrollBehavior = "";
-                }, 100);
-            } else {
-                // Прокручуємо до початку, якщо категорія нова
-                window.scrollTo(0, 0);
-            }
-            observer.disconnect();
-        }
-    });
-    observer.observe(document.body, { childList: true, subtree: true });
-});
+    
+            Object.keys(sessionStorage).forEach(key => {
+                if (key.startsWith('savedScrollPosition-')) {
+                    sessionStorage.removeItem(key);
+                }
+            });
+    
+            sessionStorage.setItem(`savedScrollPosition-${categoryKey}-page${page}`, window.scrollY);
+            sessionStorage.setItem(`lastVisitedPage-${categoryKey}`, page);
+        });
+    
+        document.addEventListener("DOMContentLoaded", () => {
+            const observer = new MutationObserver(() => {
+                const productsGrid = document.getElementById('products-grid');
+                if (productsGrid && productsGrid.classList.contains('loaded')) {
+                    const urlParams = new URLSearchParams(window.location.search);
+                    const categoryId = urlParams.get("categoryId");
+                    const subcategoryId = urlParams.get("subcategoryId");
+                    const page = urlParams.get("page") || "1";
+                    const categoryKey = categoryId ? `category-${categoryId}` : subcategoryId ? `subcategory-${subcategoryId}` : "all-products";
+    
+                    const previousPage = sessionStorage.getItem(`lastVisitedPage-${categoryKey}`);
+                    const isPaginationChange = previousPage && previousPage !== page;
+    
+                    if (isPaginationChange) {
+                        document.documentElement.style.scrollBehavior = "auto";
+                        window.scrollTo(0, 0);
+                        document.documentElement.style.scrollBehavior = "";
+                    } else {
+                        const savedScroll = sessionStorage.getItem(`savedScrollPosition-${categoryKey}-page${page}`);
+                        if (savedScroll !== null) {
+                            document.documentElement.style.scrollBehavior = "auto";
+                            window.scrollTo(0, parseInt(savedScroll, 10));
+                            setTimeout(() => {
+                                document.documentElement.style.scrollBehavior = "";
+                            }, 100);
+                        } else {
+                            document.documentElement.style.scrollBehavior = "auto";
+                            window.scrollTo(0, 0);
+                            document.documentElement.style.scrollBehavior = "";
+                        }
+                    }
+    
+                    sessionStorage.setItem(`lastVisitedPage-${categoryKey}`, page);
+    
+                    observer.disconnect();
+                }
+            });
+            observer.observe(document.body, { childList: true, subtree: true });
+        });
     </script>
                   
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'936e207bacd8bf91',t:'MTc0NTc1NDg4NC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>

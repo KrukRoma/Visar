@@ -195,6 +195,29 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
+app.get('/category-products', async (req, res) => {
+  const categoryName = req.query.category;
+
+  if (!categoryName) {
+    return res.status(400).send('Категорія не вказана');
+  }
+
+  try {
+    const [rows] = await pool.query(`
+      SELECT * FROM Categories WHERE CategoryName = ?
+    `, [categoryName]);
+
+    if (rows.length === 0) {
+      return res.status(404).send('Категорія не знайдена');
+    }
+
+    res.json(rows);
+  } catch (error) {
+    console.error('Помилка:', error.message);
+    res.status(500).send('Серверна помилка');
+  }
+});
+
 // Маршрут: Отримання одного продукту по ID
 app.get("/api/products/:id", async (req, res) => {
   const productId = req.params.id;
@@ -253,6 +276,10 @@ app.get("/api/products/:id", async (req, res) => {
     console.error("Помилка при отриманні продукту:", error.message);
     res.status(500).json({ error: "Серверна помилка" });
   }
+});
+
+app.use((req, res) => {
+  res.status(404).sendFile(path.join(__dirname, '404.html'));
 });
 
 // Запуск сервера

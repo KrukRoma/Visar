@@ -11,12 +11,12 @@ const port = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cors());
+app.use(express.static(path.join(__dirname)));
+app.use('/images', express.static(path.join(__dirname, 'images')));
 
-// Налаштування Multer для зберігання файлів у папці images/
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = 'images/';
-    // Переконайтеся, що папка images/ існує
     if (!fs.existsSync(dir)) {
       fs.mkdirSync(dir, { recursive: true });
     }
@@ -27,6 +27,7 @@ const storage = multer.diskStorage({
     cb(null, uniqueSuffix + path.extname(file.originalName));
   }
 });
+
 const upload = multer({
   storage: storage,
   fileFilter: (req, file, cb) => {
@@ -37,16 +38,9 @@ const upload = multer({
       cb(new Error('Тільки JPEG, PNG або GIF файли дозволені'));
     }
   },
-  limits: { fileSize: 5 * 1024 * 1024 } // Обмеження розміру файлу (5MB)
+  limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-// Обслуговування статичних файлів
-app.use(express.static(path.join(__dirname)));
-app.use('/images', express.static(path.join(__dirname, 'images'))); // Явне обслуговування папки images/
-console.log(`Serving static files from: ${path.join(__dirname)}`);
-console.log(`Serving images from: ${path.join(__dirname, 'images')}`);
-
-// Пул підключень до MySQL
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -57,31 +51,23 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// Маршрут: Завантаження фотографії продукту
 app.post("/api/products/upload", upload.single('photo'), async (req, res) => {
   try {
-    console.log('Received upload request:', req.body, req.file);
     if (!req.file) {
       return res.status(400).json({ error: "Файл не завантажено" });
     }
-
     const { productId } = req.body;
     if (!productId) {
       return res.status(400).json({ error: "productId є обов’язковим" });
     }
-
-    const filePath = `images/${req.file.filename}`; // Шлях до файлу
-
-    // Оновлення шляху до фото в базі даних
+    const filePath = `images/${req.file.filename}`;
     const [result] = await pool.query(
       `UPDATE Products SET Photo = ? WHERE ProductID = ?`,
       [filePath, productId]
     );
-
     if (result.affectedRows === 0) {
       return res.status(404).json({ error: "Продукт із вказаним ID не знайдено" });
     }
-
     res.json({ message: "Фото успішно завантажено", filePath });
   } catch (error) {
     console.error("Помилка завантаження фото:", error.message);
@@ -89,7 +75,6 @@ app.post("/api/products/upload", upload.single('photo'), async (req, res) => {
   }
 });
 
-// Маршрут: Отримання категорій та підкатегорій
 app.get("/api/categories", async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -101,10 +86,8 @@ app.get("/api/categories", async (req, res) => {
       FROM Categories c
       LEFT JOIN Subcategories sc ON c.CategoryID = sc.CategoryID
     `);
-
     const categories = [];
     const categoriesMap = new Map();
-
     rows.forEach((row) => {
       if (!categoriesMap.has(row.categoryId)) {
         const newCategory = {
@@ -115,7 +98,6 @@ app.get("/api/categories", async (req, res) => {
         categoriesMap.set(row.categoryId, newCategory);
         categories.push(newCategory);
       }
-
       if (row.subcategoryId) {
         categoriesMap.get(row.categoryId).subcategories.push({
           id: row.subcategoryId,
@@ -123,7 +105,6 @@ app.get("/api/categories", async (req, res) => {
         });
       }
     });
-
     res.json(categories);
   } catch (error) {
     console.error("Помилка отримання категорій:", error.message);
@@ -131,7 +112,6 @@ app.get("/api/categories", async (req, res) => {
   }
 });
 
-// Маршрут: Отримання всіх продуктів
 app.get("/api/products", async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -153,16 +133,14 @@ app.get("/api/products", async (req, res) => {
       LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
       LEFT JOIN ProductVariants pv ON p.ProductID = pv.ProductID
     `);
-
     const products = [];
     const productsMap = new Map();
-
     rows.forEach((row) => {
       if (!productsMap.has(row.productId)) {
         const newProduct = {
           id: row.productId,
           name: row.productName,
-          photo: row.productPhoto ? `/${row.productPhoto}` : null, // Додаємо "/" до шляху
+          photo: row.productPhoto ? `/${row.productPhoto}` : null,
           description: row.productDescription,
           category: {
             id: row.categoryId,
@@ -177,7 +155,6 @@ app.get("/api/products", async (req, res) => {
         productsMap.set(row.productId, newProduct);
         products.push(newProduct);
       }
-
       if (row.variantId) {
         productsMap.get(row.productId).variants.push({
           id: row.variantId,
@@ -187,7 +164,6 @@ app.get("/api/products", async (req, res) => {
         });
       }
     });
-
     res.json(products);
   } catch (error) {
     console.error("Помилка отримання продуктів:", error.message);
@@ -197,20 +173,16 @@ app.get("/api/products", async (req, res) => {
 
 app.get('/category-products', async (req, res) => {
   const categoryName = req.query.category;
-
   if (!categoryName) {
     return res.status(400).send('Категорія не вказана');
   }
-
   try {
     const [rows] = await pool.query(`
       SELECT * FROM Categories WHERE CategoryName = ?
     `, [categoryName]);
-
     if (rows.length === 0) {
       return res.status(404).send('Категорія не знайдена');
     }
-
     res.json(rows);
   } catch (error) {
     console.error('Помилка:', error.message);
@@ -218,10 +190,8 @@ app.get('/category-products', async (req, res) => {
   }
 });
 
-// Маршрут: Отримання одного продукту по ID
 app.get("/api/products/:id", async (req, res) => {
   const productId = req.params.id;
-
   try {
     const [productRows] = await pool.query(`
       SELECT 
@@ -238,15 +208,13 @@ app.get("/api/products/:id", async (req, res) => {
       LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
       WHERE p.ProductID = ?
     `, [productId]);
-
     if (productRows.length === 0) {
       return res.status(404).json({ error: "Продукт не знайдено" });
     }
-
     const product = {
       id: productRows[0].productId,
       name: productRows[0].productName,
-      photo: productRows[0].productPhoto ? `/${productRows[0].productPhoto}` : null, // Додаємо "/" до шляху
+      photo: productRows[0].productPhoto ? `/${productRows[0].productPhoto}` : null,
       description: productRows[0].productDescription,
       category: {
         id: productRows[0].categoryId,
@@ -258,7 +226,6 @@ app.get("/api/products/:id", async (req, res) => {
       } : null,
       variants: [],
     };
-
     const [variantRows] = await pool.query(`
       SELECT 
         VariantID AS id,
@@ -268,9 +235,7 @@ app.get("/api/products/:id", async (req, res) => {
       FROM ProductVariants
       WHERE ProductID = ?
     `, [productId]);
-
     product.variants = variantRows;
-
     res.json(product);
   } catch (error) {
     console.error("Помилка при отриманні продукту:", error.message);
@@ -282,7 +247,6 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, '404.html'));
 });
 
-// Запуск сервера
 app.listen(port, () => {
   console.log(`Сервер запущено на http://localhost:${port}`);
 });

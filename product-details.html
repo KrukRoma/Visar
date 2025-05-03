@@ -430,22 +430,17 @@
     </footer>
 
     <script src="/visar.js"></script>
-    <script>
+<script>
     async function loadCatalog() {
         const catalogContainer = document.getElementById("dynamic-catalog");
-
         try {
-            const response = await fetch("http://localhost:3000/api/categories");
-            if (!response.ok) {
-                throw new Error(`HTTP помилка: ${response.status}`);
-            }
+            const response = await fetch(`${API_URL}/api/categories`);
+            if (!response.ok) throw new Error(`HTTP помилка: ${response.status}`);
             const categories = await response.json();
-
             catalogContainer.innerHTML = '';
-
             categories.forEach(category => {
-                const categoryItemDesktop = createCategoryItem(category);
-                catalogContainer.appendChild(categoryItemDesktop);
+                const categoryItem = createCategoryItem(category);
+                catalogContainer.appendChild(categoryItem);
             });
         } catch (error) {
             console.error("Помилка завантаження каталогу:", error);
@@ -456,7 +451,6 @@
     function createCategoryItem(category) {
         const categoryItem = document.createElement("div");
         categoryItem.classList.add("dropdown-item");
-
         if (category.subcategories && category.subcategories.length > 0) {
             categoryItem.classList.add("has-submenu");
             const categoryLink = document.createElement("a");
@@ -464,17 +458,14 @@
             categoryLink.classList.add("submenu-toggle");
             categoryLink.textContent = category.name;
             categoryLink.innerHTML += ' <i class="fas fa-chevron-right"></i>';
-
             const subMenu = document.createElement("div");
             subMenu.classList.add("submenu");
-
             category.subcategories.forEach(subcategory => {
                 const subcategoryLink = document.createElement("a");
                 subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
                 subcategoryLink.textContent = subcategory.name;
                 subMenu.appendChild(subcategoryLink);
             });
-
             categoryItem.appendChild(categoryLink);
             categoryItem.appendChild(subMenu);
         } else {
@@ -483,143 +474,114 @@
             categoryLink.textContent = category.name;
             categoryItem.appendChild(categoryLink);
         }
-
         return categoryItem;
     }
 
     async function loadProductDetails() {
-        const productDetailsContainer = document.getElementById("product-details");
-        const skeletonProductDetails = document.getElementById("skeleton-product-details");
+    const productDetailsContainer = document.getElementById("product-details");
+    const skeletonProductDetails = document.getElementById("skeleton-product-details");
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get("id");
 
-        const urlParams = new URLSearchParams(window.location.search);
-        const productId = urlParams.get("id");
-
-        if (!productId) {
-            skeletonProductDetails.style.display = "none";
-            productDetailsContainer.innerHTML = '<p class="error-message">Продукт не знайдено. Відсутній ідентифікатор продукту.</p>';
-            productDetailsContainer.classList.add("loaded");
-            return;
-        }
-
-        try {
-            console.log("Завантаження продукту з ID:", productId);
-            const response = await fetch(`http://localhost:3000/api/products/${productId}`);
-            if (!response.ok) {
-                if (response.status === 404) {
-                    skeletonProductDetails.style.display = "none";
-                    productDetailsContainer.innerHTML = '<p class="error-message">Продукт із ID ' + productId + ' не знайдено.</p>';
-                    productDetailsContainer.classList.add("loaded");
-                    throw new Error("Продукт не знайдено");
-                }
-                throw new Error(`HTTP помилка: ${response.status}`);
-            }
-
-            const product = await response.json();
-            console.log("Отримані дані про продукт:", product);
-
-            // Перевірка, чи отримані дані є об’єктом
-            if (!product || typeof product !== 'object') {
-                throw new Error("Дані про продукт некоректні або відсутні.");
-            }
-
-            // Отримуємо дані із правильними назвами полів (у нижньому регістрі)
-            const productName = product.name || "Назва продукту недоступна";
-            const productPhoto = product.photo || "https://via.placeholder.com/300?text=Зображення+недоступне";
-            const productDescription = product.description || "Опис продукту відсутній.";
-
-            // Ініціалізація змінних
-            let variantData = [];
-            let sizeHtml = '';
-            let initialPrice = "Ціна недоступна";
-
-            // Перевірка варіантів продукту
-            if (product.variants && Array.isArray(product.variants) && product.variants.length > 0) {
-                // Спочатку перевіряємо, чи є ціна в оригінальних варіантах
-                const variantWithPrice = product.variants.find(variant => variant.price != null);
-                if (variantWithPrice) {
-                    initialPrice = `${variantWithPrice.price} грн`;
-                }
-
-                // Фільтруємо варіанти, виключаючи ті, у яких size = "Default"
-                const filteredVariants = product.variants.filter(variant => variant.size && variant.size.toLowerCase() !== "default");
-
-                if (filteredVariants.length > 0) {
-                    // Форматування варіантів, якщо є доступні розміри
-                    variantData = filteredVariants.map(variant => {
-                        const size = variant.size || "Розмір недоступний";
-                        const price = variant.price != null ? `${variant.price} грн` : "Ціна недоступна";
-                        return { size, price };
-                    });
-
-                    // Якщо є відфільтровані варіанти, беремо ціну з першого
-                    initialPrice = variantData[0].price;
-
-                    // Визначаємо, як показувати розмір: статично чи через випадаюче меню
-                    if (variantData.length === 1) {
-                        // Якщо лише один варіант, показуємо розмір статично
-                        sizeHtml = `<span>Розмір: ${variantData[0].size}</span>`;
-                    } else {
-                        // Якщо більше одного варіанту, показуємо випадаюче меню
-                        sizeHtml = `
-                            <label for="size-select">Розмір: </label>
-                            <select id="size-select" name="size">
-                                ${variantData.map((variant, index) => `<option value="${index}" ${index === 0 ? 'selected' : ''}>${variant.size}</option>`).join('')}
-                            </select>
-                        `;
-                    }
-                }
-                // Якщо filteredVariants.length === 0, розмір не відображається, але ціна вже встановлена вище
-            }
-
-            // Відображення деталей продукту
-            productDetailsContainer.innerHTML = `
-                <img src="${productPhoto}" alt="${productName}" class="product-image">
-                <div class="product-info-container">
-                    <h1 class="product-title">${productName}</h1>
-                    ${sizeHtml ? `<div class="product-size">${sizeHtml}</div>` : ''}
-                    <div class="product-price" id="product-price">${initialPrice}</div>
-                    <div class="product-description-container">
-                        <div class="product-description-title">Опис продукту</div>
-                        <p class="product-description">${productDescription}</p>
-                    </div>
-                </div>
-            `;
-
-            // Додавання обробника для оновлення ціни, якщо є випадаюче меню
-            if (variantData.length > 1) {
-                const sizeSelect = document.getElementById("size-select");
-                const priceElement = document.getElementById("product-price");
-                sizeSelect.addEventListener("change", (e) => {
-                    const selectedIndex = e.target.value;
-                    const selectedVariant = variantData[selectedIndex];
-                    priceElement.textContent = selectedVariant.price;
-                });
-            }
-
-            skeletonProductDetails.style.display = "none";
-            productDetailsContainer.classList.add("loaded");
-        } catch (error) {
-            console.error("Помилка завантаження продукту:", error);
-            skeletonProductDetails.style.display = "none";
-            productDetailsContainer.innerHTML = '<p class="error-message">Не вдалося завантажити продукт із ID ' + productId + '. Спробуйте пізніше.</p>';
-            productDetailsContainer.classList.add("loaded");
-        }
+    if (!productId) {
+        skeletonProductDetails.style.display = "none";
+        productDetailsContainer.innerHTML = '<p class="error-message">Продукт не знайдено. Відсутній ідентифікатор продукту.</p>';
+        productDetailsContainer.classList.add("loaded");
+        return;
     }
+
+    try {
+        const response = await fetch(`${API_URL}/api/products/${productId}`);
+        if (!response.ok) {
+            if (response.status === 404) {
+                skeletonProductDetails.style.display = "none";
+                productDetailsContainer.innerHTML = '<p class="error-message">Продукт із ID ' + productId + ' не знайдено.</p>';
+                productDetailsContainer.classList.add("loaded");
+                throw new Error("Продукт не знайдено");
+            }
+            throw new Error(`HTTP помилка: ${response.status}`);
+        }
+
+        const product = await response.json();
+        if (!product || typeof product !== 'object') {
+            throw new Error("Дані про продукт некоректні або відсутні.");
+        }
+
+        const productName = product.name || "Назва продукту недоступна";
+        const productPhoto = product.photo || "https://via.placeholder.com/300?text=Зображення+недоступне";
+        const productDescription = product.description || "Опис продукту відсутній.";
+        let variantData = [];
+        let sizeHtml = '';
+        let initialPrice = "Ціна недоступна";
+
+        if (product.variants && Array.isArray(product.variants) && product.variants.length > 0) {
+            const variantWithPrice = product.variants.find(variant => variant.price != null);
+            if (variantWithPrice) initialPrice = `${variantWithPrice.price} грн`;
+            const filteredVariants = product.variants.filter(variant => variant.size && variant.size.toLowerCase() !== "default");
+            if (filteredVariants.length > 0) {
+                variantData = filteredVariants.map(variant => {
+                    const size = variant.size || "Розмір недоступний";
+                    const price = variant.price != null ? `${variant.price} грн` : "Ціна недоступна";
+                    return { size, price };
+                });
+                initialPrice = variantData[0].price;
+                if (variantData.length === 1) {
+                    sizeHtml = `<span>Розмір: ${variantData[0].size}</span>`;
+                } else {
+                    sizeHtml = `
+                        <label for="size-select">Розмір: </label>
+                        <select id="size-select" name="size">
+                            ${variantData.map((variant, index) => `<option value="${index}" ${index === 0 ? 'selected' : ''}>${variant.size}</option>`).join('')}
+                        </select>
+                    `;
+                }
+            }
+        }
+
+        // Додаємо loading="lazy" до тегу <img>
+        productDetailsContainer.innerHTML = `
+            <img src="${productPhoto}" alt="${productName}" class="product-image" loading="lazy">
+            <div class="product-info-container">
+                <h1 class="product-title">${productName}</h1>
+                ${sizeHtml ? `<div class="product-size">${sizeHtml}</div>` : ''}
+                <div class="product-price" id="product-price">${initialPrice}</div>
+                <div class="product-description-container">
+                    <div class="product-description-title">Опис продукту</div>
+                    <p class="product-description">${productDescription}</p>
+                </div>
+            </div>
+        `;
+
+        if (variantData.length > 1) {
+            const sizeSelect = document.getElementById("size-select");
+            const priceElement = document.getElementById("product-price");
+            sizeSelect.addEventListener("change", (e) => {
+                const selectedIndex = e.target.value;
+                const selectedVariant = variantData[selectedIndex];
+                priceElement.textContent = selectedVariant.price;
+            });
+        }
+
+        skeletonProductDetails.style.display = "none";
+        productDetailsContainer.classList.add("loaded");
+    } catch (error) {
+        console.error("Помилка завантаження продукту:", error);
+        skeletonProductDetails.style.display = "none";
+        productDetailsContainer.innerHTML = '<p class="error-message">Не вдалося завантажити продукт із ID ' + productId + '. Спробуйте пізніше.</p>';
+        productDetailsContainer.classList.add("loaded");
+    }
+}
 
     document.addEventListener("DOMContentLoaded", async () => {
         await loadCatalog();
         await loadProductDetails();
-
         document.querySelectorAll('.info-link').forEach(link => {
             link.addEventListener('click', (e) => {
                 e.preventDefault();
                 const currentPage = window.location.pathname;
-
                 if (currentPage.includes('visar.html')) {
                     const targetSection = document.querySelector('#why-need');
-                    if (targetSection) {
-                        targetSection.scrollIntoView({ behavior: 'smooth' });
-                    }
+                    if (targetSection) targetSection.scrollIntoView({ behavior: 'smooth' });
                 } else {
                     window.location.href = 'visar.html#why-need';
                 }
@@ -642,18 +604,14 @@
         });
 
         modal.addEventListener('click', (e) => {
-            if (e.target === modal) {
-                modal.style.display = 'none';
-            }
+            if (e.target === modal) modal.style.display = 'none';
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.style.display === 'flex') {
-                modal.style.display = 'none';
-            }
+            if (e.key === 'Escape' && modal.style.display === 'flex') modal.style.display = 'none';
         });
     });
-    </script>
+</script>
 
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'93362e9aac22bd1b',t:'MTc0NTE2ODI2MC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>
     <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'933c9ccd2bd4b001',t:'MTc0NTIzNTY4OC4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script>

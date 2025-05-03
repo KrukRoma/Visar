@@ -8,7 +8,6 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="icon" href="/images/VisarLogo.png" type="image/png">
     <style>
-        /* Стили для модального вікна */
         .modal {
             display: none;
             position: fixed;
@@ -164,7 +163,6 @@
         </div>
     </div>
 
-    <!-- Модальне вікно для контактів -->
     <div class="modal" id="contact-modal">
         <div class="modal-content">
             <span class="close-btn">×</span>
@@ -183,7 +181,6 @@
     </div>
 
     <main>
-        <!-- Hero Section -->
         <section class="hero">
             <div class="hero-content">
                 <h1 class="animate-text">Антигравійна<br>поліуретанова<br>плівка<br>VISAR</h1>
@@ -199,7 +196,6 @@
             </div>
         </section>
 
-        <!-- Self-Healing Film Section -->
         <section id="why-need" class="self-healing-film">
             <div class="container">
                 <div class="self-healing-content">
@@ -214,7 +210,6 @@
             </div>
         </section>
 
-        <!-- Why Choose Section -->
         <section class="why-choose">
             <div class="container">
                 <h2>Чому варто обрати плівку для захисту лакофарбового покриття VISAR™?</h2>
@@ -224,7 +219,6 @@
             </div>
         </section>
 
-        <!-- Features Section -->
         <section class="features">
             <div class="container">
                 <div class="features-layout">
@@ -281,7 +275,6 @@
             </div>
         </section>
 
-        <!-- Catalog CTA Section -->
         <section class="catalog-cta">
             <div class="container">
                 <h3>Переглянути варіанти плівок</h3>
@@ -290,14 +283,12 @@
             </div>
         </section>
 
-        <!-- Video Section -->
         <section id="product-slider" class="product-slider">
             <div class="video-container">
                 <iframe width="100%" height="500" src="https://www.youtube.com/embed/_Na3VDBCX_8" title="VISAR Protective Film" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
             </div>
         </section>
 
-        <!-- Specialists Section -->
         <section class="specialists">
             <div class="container">
                 <div class="specialists-content">
@@ -312,7 +303,6 @@
             </div>
         </section>
 
-        <!-- Protection Image Section -->
         <section class="protection-image-section">
             <div class="protection-image">
                 <img src="/images/CarDef.png" alt="Car with protection zones" class="protection-car-image">
@@ -404,7 +394,6 @@
         document.addEventListener("DOMContentLoaded", async () => {
             await loadCatalog();
 
-            // Обробка кліку по "Корисна інформація"
             document.querySelectorAll('.info-link').forEach(link => {
                 link.addEventListener('click', (e) => {
                     e.preventDefault();
@@ -421,7 +410,6 @@
                 });
             });
 
-            // Обробка модального вікна для контактів
             const modal = document.getElementById('contact-modal');
             const contactLinks = document.querySelectorAll('.contact-link');
             const closeBtn = document.querySelector('.close-btn');

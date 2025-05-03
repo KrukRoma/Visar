@@ -1,4 +1,3 @@
-/* Базові стилі */
 @import url("https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&display=swap");
 
 :root {
@@ -67,7 +66,6 @@ ul {
   padding: 0 15px;
 }
 
-/* Стилі для хедера */
 header {
   position: fixed;
   top: 0;
@@ -127,7 +125,6 @@ nav {
   color: var(--primary-color);
 }
 
-/* Стилі для випадаючого меню */
 .dropdown {
   position: relative;
 }
@@ -138,7 +135,6 @@ nav {
   text-decoration: none !important;
 }
 
-/* Видаляємо поворот стрілки */
 .dropdown-toggle i {
   transition: none;
 }
@@ -147,7 +143,6 @@ nav {
   transform: none;
 }
 
-/* Змінюємо колір тексту "Каталог товарів" при наведенні на підменю */
 .dropdown:hover .dropdown-toggle {
   color: var(--primary-color) !important;
 }
@@ -182,7 +177,7 @@ nav {
 .dropdown-item {
   display: flex;
   align-items: center;
-  justify-content: space-between; /* За замовчуванням для пунктів з підменю */
+  justify-content: space-between; 
   height: 50px;
   padding: 0 20px;
   color: var(--light-color);
@@ -193,12 +188,10 @@ nav {
   font-weight: 500;
 }
 
-/* Новий стиль для пунктів без підменю */
 .dropdown-item:not(.has-submenu) {
-  justify-content: center; /* Вирівнюємо по центру, якщо немає підменю */
+  justify-content: center; 
 }
 
-/* Залишаємо решту стилів без змін */
 .dropdown-item:last-child {
   border-bottom: none;
 }
@@ -270,7 +263,6 @@ nav {
   color: var(--primary-color);
 }
 
-/* Прибираємо всі можливі границі та лінії */
 .dropdown-item,
 .submenu a {
   border: none;
@@ -285,7 +277,6 @@ nav {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Додаткове правило для видалення будь-яких ліній */
 .dropdown-item::before,
 .dropdown-item::after,
 .submenu a::before,
@@ -294,14 +285,12 @@ nav {
   content: none;
 }
 
-/* Переконаємося, що немає ніяких додаткових стилів, які могли б створювати лінії */
 .dropdown-item.has-submenu::after,
 .dropdown-item.has-submenu::before {
   display: none;
   content: none;
 }
 
-/* Прибираємо підкреслення для всіх посилань у меню */
 .main-menu li a,
 .dropdown-toggle,
 .dropdown-item a,
@@ -309,18 +298,15 @@ nav {
   text-decoration: none !important;
 }
 
-/* Змінюємо колір тексту батьківського пункту при наведенні на підменю */
 .dropdown-item.has-submenu:hover .submenu-toggle {
   color: var(--primary-color);
 }
 
-/* Коли курсор знаходиться в підменю, батьківський пункт залишається червоним */
 .dropdown-item.has-submenu .submenu:hover + .submenu-toggle,
 .dropdown-item.has-submenu:hover .submenu-toggle {
   color: var(--primary-color);
 }
 
-/* Стилі для контактної інформації */
 .contact-info {
   display: flex;
   align-items: center;
@@ -328,7 +314,7 @@ nav {
   color: var(--light-color);
   font-size: 14px;
   flex-shrink: 0;
-  margin-right: 60px; /* Збільшено відступ, щоб перемістити номер ще лівіше */
+  margin-right: 60px; 
 }
 
 .phone,
@@ -361,7 +347,6 @@ nav {
   border-color: var(--primary-color);
 }
 
-/* Мобільне меню */
 .mobile-menu-toggle {
   display: none;
   background: none;
@@ -486,7 +471,6 @@ nav {
   justify-content: center;
 }
 
-/* Hero Section */
 .hero {
   position: relative;
   height: 100vh;
@@ -579,7 +563,6 @@ nav {
   color: var(--primary-color);
 }
 
-/* Animation Classes */
 .animate-text {
   opacity: 0;
   transform: translateY(30px);
@@ -601,9 +584,8 @@ nav {
   }
 }
 
-/* Product Slider */
 .product-slider {
-  padding: 100px 0 50px 0; /* Increased top padding to ensure products are fully visible */
+  padding: 100px 0 50px 0; 
   background-color: var(--dark-color);
 }
 
@@ -684,7 +666,6 @@ nav {
   border-color: var(--primary-color);
 }
 
-/* Video container styles */
 .video-container {
   width: 100%;
   max-width: 1000px;
@@ -700,7 +681,6 @@ nav {
   height: 500px;
 }
 
-/* Responsive video for mobile */
 @media (max-width: 768px) {
   .video-container iframe {
     height: 300px;
@@ -723,7 +703,6 @@ nav {
   }
 }
 
-/* Self-Healing Film Section */
 .self-healing-film {
   padding: 80px 0;
   background-color: var(--dark-color);
@@ -763,7 +742,6 @@ nav {
   line-height: 1.8;
 }
 
-/* Why Choose Section */
 .why-choose {
   padding: 80px 0;
   background-color: var(--dark-color);
@@ -786,13 +764,11 @@ nav {
   line-height: 1.8;
 }
 
-/* Features Section */
 .features {
   padding: 80px 0;
   background-color: var(--dark-color);
 }
 
-/* Нова структура для секції функцій */
 .features-layout {
   display: flex;
   align-items: center;
@@ -848,7 +824,6 @@ nav {
   opacity: 0.8;
 }
 
-/* Catalog CTA Section */
 .catalog-cta {
   padding: 80px 0;
   background-color: var(--dark-color);
@@ -900,7 +875,6 @@ nav {
   line-height: 1.8;
 }
 
-/* Specialists Section */
 .specialists {
   padding: 80px 0;
   background-color: var(--dark-color);
@@ -958,7 +932,6 @@ nav {
   box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
 }
 
-/* Protection Image Section */
 .protection-image-section {
   padding: 80px 0 0 0;
   background-color: var(--dark-color);
@@ -978,7 +951,6 @@ nav {
   display: block;
 }
 
-/* Footer */
 footer {
   padding: 40px 0;
   background-color: var(--dark-color);
@@ -1028,7 +1000,6 @@ footer {
   background-color: var(--primary-color);
 }
 
-/* Responsive Styles */
 @media (max-width: 1200px) {
   .container {
     max-width: 960px;
@@ -1206,7 +1177,6 @@ footer {
   }
 }
 
-/* Landscape mode for mobile */
 @media (max-height: 500px) and (orientation: landscape) {
   .hero {
     height: auto;
@@ -1228,7 +1198,6 @@ footer {
   }
 }
 
-/* Print styles */
 @media print {
   header,
   footer,
@@ -1263,12 +1232,10 @@ footer {
   }
 }
 
-/* Стилі для прихованих продуктів */
 .hidden-product {
   display: none;
 }
 
-/* Стилі для відображення повного каталогу */
 .product-slider.full-catalog .slider-track {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -1282,7 +1249,6 @@ footer {
   padding: 0;
 }
 
-/* Адаптивні стилі для повного каталогу */
 @media (max-width: 1024px) {
   .product-slider.full-catalog .slider-track {
     grid-template-columns: repeat(2, 1fr);
@@ -1302,7 +1268,6 @@ footer {
   }
 }
 
-/* Анімації для випадаючого меню */
 @keyframes fadeInDown {
   from {
     opacity: 0;

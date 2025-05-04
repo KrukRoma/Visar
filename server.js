@@ -243,6 +243,11 @@ app.get("/api/products/:id", async (req, res) => {
   }
 });
 
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'visar.html'));
+});
+
+// Обробка 404 для всіх інших невідповідних маршрутів
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, '404.html'));
 });

@@ -252,7 +252,9 @@ app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, '404.html'));
 });
 
-app.listen(PORT, () => {
-  const host = process.env.NODE_ENV === 'production' ? 'https://visar.com.ua' : `http://localhost:${PORT}`;
+app.listen(PORT, '0.0.0.0', () => {
+  const host = process.env.NODE_ENV === 'production'
+    ? 'https://visar.com.ua'
+    : `http://localhost:${PORT}`;
   console.log(`Сервер запущено на ${host}`);
 });

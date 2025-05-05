@@ -1,5 +1,4 @@
-const API_URL = window.API_URL || 'http://localhost:3000';
-
+const API_URL = window.API_URL || '/api';
 document.addEventListener('DOMContentLoaded', function () {
     const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
     const mobileMenu = document.querySelector('.mobile-menu');

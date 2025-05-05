@@ -5,12 +5,18 @@ const cors = require("cors");
 const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
+const helmet = require("helmet");
+const morgan = require("morgan");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
 app.use(express.json());
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*', 
+}));
+app.use(helmet()); 
+app.use(morgan('combined')); 
 app.use(express.static(path.join(__dirname)));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 
@@ -24,7 +30,7 @@ const storage = multer.diskStorage({
   },
   filename: (req, file, cb) => {
     const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
-    cb(null, uniqueSuffix + path.extname(file.originalName));
+    cb(null, uniqueSuffix + path.extname(file.originalname)); 
   }
 });
 
@@ -38,7 +44,7 @@ const upload = multer({
       cb(new Error('Тільки JPEG, PNG або GIF файли дозволені'));
     }
   },
-  limits: { fileSize: 5 * 1024 * 1024 }
+  limits: { fileSize: 5 * 1024 * 1024 } 
 });
 
 const pool = mysql.createPool({
@@ -47,7 +53,7 @@ const pool = mysql.createPool({
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
   waitForConnections: true,
-  connectionLimit: 100,
+  connectionLimit: 50, 
   queueLimit: 0
 });
 
@@ -171,25 +177,6 @@ app.get("/api/products", async (req, res) => {
   }
 });
 
-app.get('/category-products', async (req, res) => {
-  const categoryName = req.query.category;
-  if (!categoryName) {
-    return res.status(400).send('Категорія не вказана');
-  }
-  try {
-    const [rows] = await pool.query(`
-      SELECT * FROM Categories WHERE CategoryName = ?
-    `, [categoryName]);
-    if (rows.length === 0) {
-      return res.status(404).send('Категорія не знайдена');
-    }
-    res.json(rows);
-  } catch (error) {
-    console.error('Помилка:', error.message);
-    res.status(500).send('Серверна помилка');
-  }
-});
-
 app.get("/api/products/:id", async (req, res) => {
   const productId = req.params.id;
   try {
@@ -247,14 +234,13 @@ app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'visar.html'));
 });
 
-// Обробка 404 для всіх інших невідповідних маршрутів
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, '404.html'));
 });
 
 app.listen(PORT, '0.0.0.0', () => {
   const host = process.env.NODE_ENV === 'production'
-    ? 'https://visar.com.ua'
+    ? process.env.API_URL || 'https://visar.com.ua'
     : `http://localhost:${PORT}`;
   console.log(`Сервер запущено на ${host}`);
 });

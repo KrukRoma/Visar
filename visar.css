@@ -827,7 +827,7 @@ nav {
 .catalog-cta {
   padding: 80px 0;
   background-color: var(--dark-color);
-  background-image: url("/placeholder.svg?height=600&width=1200");
+  /* background-image: url("/images/background.jpg"); */ /* Додайте реальне зображення */
   background-size: cover;
   background-position: center;
   position: relative;

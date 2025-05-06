@@ -6,20 +6,42 @@ const path = require("path");
 const fs = require("fs");
 const multer = require("multer");
 const helmet = require("helmet");
-const morgan = require("morgan");
 
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// Middleware
-app.use(express.json());
-app.use(cors({ origin: process.env.CORS_ORIGIN || '*' })); // CORS
-app.use(helmet()); // Security Headers
-app.use(morgan('combined')); // HTTP Logger
-app.use(express.static(path.join(__dirname))); // Static files
-app.use('/images', express.static(path.join(__dirname, 'images'))); // Serve images folder
+app.use((req, res, next) => {
+  if (req.protocol === 'http' && process.env.NODE_ENV === 'production') {
+    return res.redirect(301, `https://${req.headers.host}${req.url}`);
+  }
+  next();
+});
 
-// Multer Configuration for File Upload
+app.use(express.json());
+app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: ["'self'"],
+      frameSrc: ["'self'", "https://www.youtube.com", "https://youtube.com"],
+      scriptSrc: [
+        "'self'",
+        "https://www.youtube.com",
+        "https://s.ytimg.com",
+        "https://cdnjs.cloudflare.com",
+        "'unsafe-inline'"
+      ],
+      styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      imgSrc: ["'self'", "data:", "https://www.visar.com.ua"],
+      connectSrc: ["'self'", "https://www.visar.com.ua", "https://www.youtube.com", "https://s.ytimg.com"],
+      mediaSrc: ["'self'", "https://www.youtube.com", "https://s.ytimg.com"]
+    }
+  })
+);
+app.use(express.static(path.join(__dirname)));
+app.use('/images', express.static(path.join(__dirname, 'images')));
+
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     const dir = 'images/';
@@ -42,10 +64,9 @@ const upload = multer({
       cb(new Error('Only JPEG, PNG, or GIF files are allowed.'));
     }
   },
-  limits: { fileSize: 5 * 1024 * 1024 } // 5MB limit
+  limits: { fileSize: 5 * 1024 * 1024 }
 });
 
-// MySQL Connection Pool
 const pool = mysql.createPool({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -56,20 +77,15 @@ const pool = mysql.createPool({
   queueLimit: 0
 });
 
-// ROUTES
-
-// Health Check
 app.get("/api/health", async (req, res) => {
   try {
     await pool.query('SELECT 1');
     res.status(200).json({ status: 'ok', message: 'Database connection is healthy' });
-  } catch (error) {
-    console.error("Database connection error:", error.message);
-    res.status(500).json({ status: 'error', message: error.message });
+  } catch {
+    res.status(500).json({ status: 'error', message: 'Database connection error' });
   }
 });
 
-// Upload Product Photo
 app.post("/api/products/upload", upload.single('photo'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).json({ error: "File not uploaded" });
@@ -88,13 +104,11 @@ app.post("/api/products/upload", upload.single('photo'), async (req, res) => {
     }
 
     res.json({ message: "Photo uploaded successfully", filePath });
-  } catch (error) {
-    console.error("Photo upload error:", error.message);
+  } catch {
     res.status(500).json({ error: "Server error" });
   }
 });
 
-// Get Categories
 app.get("/api/categories", async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -130,13 +144,11 @@ app.get("/api/categories", async (req, res) => {
     });
 
     res.json(categories);
-  } catch (error) {
-    console.error("Error fetching categories:", error.message);
+  } catch {
     res.status(500).json({ message: "Failed to fetch categories" });
   }
 });
 
-// Get All Products
 app.get("/api/products", async (req, res) => {
   try {
     const [rows] = await pool.query(`
@@ -194,13 +206,11 @@ app.get("/api/products", async (req, res) => {
     });
 
     res.json(products);
-  } catch (error) {
-    console.error("Error fetching products:", error.message);
+  } catch {
     res.status(500).json({ message: "Failed to fetch products" });
   }
 });
 
-// Get Product By ID
 app.get("/api/products/:id", async (req, res) => {
   const productId = req.params.id;
   try {
@@ -252,23 +262,19 @@ app.get("/api/products/:id", async (req, res) => {
 
     product.variants = variantRows;
     res.json(product);
-  } catch (error) {
-    console.error("Error fetching product:", error.message);
+  } catch {
     res.status(500).json({ error: "Server error" });
   }
 });
 
-// Serve Main Page
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'visar.html'));
 });
 
-// 404 Handler
 app.use((req, res) => {
   res.status(404).sendFile(path.join(__dirname, '404.html'));
 });
 
-// Start Server
 app.listen(PORT, '0.0.0.0', () => {
   const host = process.env.NODE_ENV === 'production'
     ? process.env.API_URL || 'https://visar.com.ua'

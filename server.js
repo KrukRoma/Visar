@@ -117,7 +117,7 @@ app.post("/api/products/upload", upload.single('photo'), async (req, res) => {
 
     res.json({ message: "Photo uploaded successfully", filePath });
   } catch (err) {
-    console.error('Error uploading photo:', err); // Додано логування помилки
+    console.error('Error uploading photo:', err); 
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -133,7 +133,7 @@ app.get("/api/categories", async (req, res) => {
       FROM Categories c
       LEFT JOIN Subcategories sc ON c.CategoryID = sc.CategoryID
     `);
-    console.log('Categories rows:', rows); // Логування результату запиту
+    console.log('Categories rows:', rows); 
     const categories = rows.map(row => ({
       categoryId: row.categoryId,
       categoryName: row.categoryName,
@@ -144,10 +144,10 @@ app.get("/api/categories", async (req, res) => {
           subcategoryName: r.subcategoryName
         }))
     }));
-    console.log('Processed categories:', categories); // Логування оброблених даних
+    console.log('Processed categories:', categories); 
     res.json(categories);
   } catch (err) {
-    console.error('Error fetching categories:', err); // Додано детальне логування помилки
+    console.error('Error fetching categories:', err); 
     res.status(500).json({ message: "Failed to fetch categories", error: err.message });
   }
 });
@@ -208,11 +208,11 @@ app.get("/api/products", async (req, res) => {
       }
     });
 
-    console.log('Products rows:', rows); // Логування результату запиту
-    console.log('Processed products:', products); // Логування оброблених даних
+    console.log('Products rows:', rows); 
+    console.log('Processed products:', products); 
     res.json(products);
   } catch (err) {
-    console.error('Error fetching products:', err); // Додано детальне логування помилки
+    console.error('Error fetching products:', err); 
     res.status(500).json({ message: "Failed to fetch products" });
   }
 });
@@ -267,10 +267,9 @@ app.get("/api/products/:id", async (req, res) => {
     `, [productId]);
 
     product.variants = variantRows;
-    console.log('Product details:', product); // Логування результату
-    res.json(product);
+    console.log('Product details:', product); 
   } catch (err) {
-    console.error('Error fetching product by ID:', err); // Додано детальне логування помилки
+    console.error('Error fetching product by ID:', err); 
     res.status(500).json({ error: "Server error" });
   }
 });

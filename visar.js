@@ -1,5 +1,4 @@
-const API_URL = window.API_URL || (window.location.protocol === 'https:' ? 'https://www.visar.com.ua/api' : '/api');
-
+const API_URL = window.API_URL || (window.location.protocol === 'https:' ? 'https://www.visar.com.ua' : '');
 document.addEventListener('DOMContentLoaded', function () {
     if (window.location.hash) {
         history.replaceState(null, null, window.location.pathname);

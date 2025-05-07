@@ -123,32 +123,44 @@ app.post("/api/products/upload", upload.single('photo'), async (req, res) => {
 });
 
 app.get("/api/categories", async (req, res) => {
+  console.log('Received request for /api/categories');
   try {
-    const [rows] = await pool.query(`
-      SELECT 
-        c.CategoryID AS categoryId, 
-        c.CategoryName AS categoryName, 
-        sc.SubcategoryID AS subcategoryId, 
-        sc.SubcategoryName AS subcategoryName
-      FROM Categories c
-      LEFT JOIN Subcategories sc ON c.CategoryID = sc.CategoryID
-    `);
-    console.log('Categories rows:', rows); 
-    const categories = rows.map(row => ({
-      categoryId: row.categoryId,
-      categoryName: row.categoryName,
-      subcategories: rows
-        .filter(r => r.categoryId === row.categoryId)
-        .map(r => ({
-          subcategoryId: r.subcategoryId,
-          subcategoryName: r.subcategoryName
-        }))
-    }));
-    console.log('Processed categories:', categories); 
-    res.json(categories);
+      const [rows] = await pool.query(`
+          SELECT 
+              c.CategoryID AS categoryId, 
+              c.CategoryName AS categoryName, 
+              sc.SubcategoryID AS subcategoryId, 
+              sc.SubcategoryName AS subcategoryName
+          FROM Categories c
+          LEFT JOIN Subcategories sc ON c.CategoryID = sc.CategoryID
+          WHERE c.CategoryName IS NOT NULL AND c.CategoryID IS NOT NULL
+      `);
+      console.log('Categories rows:', rows);
+
+      // Групуємо категорії та підкатегорії
+      const categoryMap = new Map();
+      rows.forEach(row => {
+          if (!categoryMap.has(row.categoryId)) {
+              categoryMap.set(row.categoryId, {
+                  categoryId: row.categoryId,
+                  categoryName: row.categoryName,
+                  subcategories: []
+              });
+          }
+          if (row.subcategoryId && row.subcategoryName) {
+              categoryMap.get(row.categoryId).subcategories.push({
+                  subcategoryId: row.subcategoryId,
+                  subcategoryName: row.subcategoryName
+              });
+          }
+      });
+
+      const categories = Array.from(categoryMap.values());
+      console.log('Processed categories:', categories);
+      res.json(categories);
   } catch (err) {
-    console.error('Error fetching categories:', err); 
-    res.status(500).json({ message: "Failed to fetch categories", error: err.message });
+      console.error('Error fetching categories:', err);
+      res.status(500).json({ message: "Failed to fetch categories", error: err.message });
   }
 });
 

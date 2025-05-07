@@ -89,20 +89,31 @@ window.addEventListener('load', () => {
 
 async function loadCatalog() {
     const catalogContainers = document.querySelectorAll('#dynamic-catalog, #mobile-catalog');
-    if (catalogContainers.length === 0) {
-        return;
-    }
+    if (catalogContainers.length === 0) return;
 
     try {
-        const response = await fetch(`${API_URL}/categories`);
-        if (!response.ok) {
-            throw new Error(`HTTP error: ${response.status}`);
-        }
+        console.log('Fetching categories from:', `${API_URL}/api/categories`);
+        const response = await Promise.race([
+            fetch(`${API_URL}/api/categories`),
+            new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 5000))
+        ]);
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
         const categories = await response.json();
+        console.log('Received categories:', categories);
+
+        // Фільтруємо категорії та підкатегорії
+        const validCategories = categories
+            .filter(category => category.categoryId && category.categoryName)
+            .map(category => ({
+                ...category,
+                subcategories: (category.subcategories || []).filter(sub => sub.subcategoryId && sub.subcategoryName)
+            }));
+        console.log('Valid categories:', validCategories);
 
         catalogContainers.forEach(catalogContainer => {
             catalogContainer.innerHTML = '';
 
+            // Додаємо пункт "Каталог товарів"
             const allProductsItem = document.createElement('div');
             allProductsItem.classList.add('dropdown-item');
             const allProductsLink = document.createElement('a');
@@ -111,12 +122,14 @@ async function loadCatalog() {
             allProductsItem.appendChild(allProductsLink);
             catalogContainer.appendChild(allProductsItem);
 
-            categories.forEach(category => {
+            // Додаємо категорії
+            validCategories.forEach(category => {
                 const categoryItem = createCategoryItem(category);
                 catalogContainer.appendChild(categoryItem);
             });
         });
     } catch (error) {
+        console.error('Помилка завантаження каталогу:', error);
         catalogContainers.forEach(catalogContainer => {
             catalogContainer.innerHTML = '<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>';
         });
@@ -124,15 +137,16 @@ async function loadCatalog() {
 }
 
 function createCategoryItem(category) {
+    console.log('Creating category item:', category);
     const categoryItem = document.createElement('div');
     categoryItem.classList.add('dropdown-item');
 
     if (category.subcategories && category.subcategories.length > 0) {
         categoryItem.classList.add('has-submenu');
         const categoryLink = document.createElement('a');
-        categoryLink.href = `category-products.html?categoryId=${category.id}`;
+        categoryLink.href = `/category-products.html?categoryId=${category.categoryId}`;
         categoryLink.classList.add('submenu-toggle');
-        categoryLink.textContent = category.name;
+        categoryLink.textContent = category.categoryName || 'Без назви';
         categoryLink.innerHTML += ' <i class="fas fa-chevron-right"></i>';
 
         const subMenu = document.createElement('div');
@@ -140,8 +154,8 @@ function createCategoryItem(category) {
 
         category.subcategories.forEach(subcategory => {
             const subcategoryLink = document.createElement('a');
-            subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
-            subcategoryLink.textContent = subcategory.name;
+            subcategoryLink.href = `/category-products.html?subcategoryId=${subcategory.subcategoryId}`;
+            subcategoryLink.textContent = subcategory.subcategoryName || 'Без назви';
             subMenu.appendChild(subcategoryLink);
         });
 
@@ -149,8 +163,8 @@ function createCategoryItem(category) {
         categoryItem.appendChild(subMenu);
     } else {
         const categoryLink = document.createElement('a');
-        categoryLink.href = `category-products.html?categoryId=${category.id}`;
-        categoryLink.textContent = category.name;
+        categoryLink.href = `/category-products.html?categoryId=${category.categoryId}`;
+        categoryLink.textContent = category.categoryName || 'Без назви';
         categoryItem.appendChild(categoryLink);
     }
 

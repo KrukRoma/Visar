@@ -32,7 +32,7 @@ app.use(
         "'unsafe-inline'"
       ],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
-      fontSrc: ["'self'", "https://fonts.gstatic.com"],
+      fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
       imgSrc: ["'self'", "data:", "https://www.visar.com.ua"],
       connectSrc: ["'self'", "https://www.visar.com.ua", "https://www.youtube.com", "https://s.ytimg.com"],
       mediaSrc: ["'self'", "https://www.youtube.com", "https://s.ytimg.com"]
@@ -72,17 +72,29 @@ const pool = mysql.createPool({
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
   database: process.env.DB_NAME,
+  port: process.env.DB_PORT || 3306,
   waitForConnections: true,
   connectionLimit: 50,
-  queueLimit: 0
+  queueLimit: 0,
+});
+
+pool.getConnection((err, connection) => {
+  if (err) {
+    console.error('Failed to initialize database connection:', err);
+  } else {
+    console.log('Database connection initialized successfully');
+    connection.release();
+  }
 });
 
 app.get("/api/health", async (req, res) => {
   try {
-    await pool.query('SELECT 1');
+    const [rows] = await pool.query('SELECT 1');
+    console.log('Health check successful:', rows);
     res.status(200).json({ status: 'ok', message: 'Database connection is healthy' });
-  } catch {
-    res.status(500).json({ status: 'error', message: 'Database connection error' });
+  } catch (err) {
+    console.error('Health check failed:', err);
+    res.status(500).json({ status: 'error', message: 'Database connection error', error: err.message });
   }
 });
 
@@ -104,7 +116,8 @@ app.post("/api/products/upload", upload.single('photo'), async (req, res) => {
     }
 
     res.json({ message: "Photo uploaded successfully", filePath });
-  } catch {
+  } catch (err) {
+    console.error('Error uploading photo:', err); // Додано логування помилки
     res.status(500).json({ error: "Server error" });
   }
 });
@@ -120,32 +133,22 @@ app.get("/api/categories", async (req, res) => {
       FROM Categories c
       LEFT JOIN Subcategories sc ON c.CategoryID = sc.CategoryID
     `);
-
-    const categories = [];
-    const categoriesMap = new Map();
-
-    rows.forEach((row) => {
-      if (!categoriesMap.has(row.categoryId)) {
-        const newCategory = {
-          id: row.categoryId,
-          name: row.categoryName,
-          subcategories: []
-        };
-        categoriesMap.set(row.categoryId, newCategory);
-        categories.push(newCategory);
-      }
-
-      if (row.subcategoryId) {
-        categoriesMap.get(row.categoryId).subcategories.push({
-          id: row.subcategoryId,
-          name: row.subcategoryName
-        });
-      }
-    });
-
+    console.log('Categories rows:', rows); // Логування результату запиту
+    const categories = rows.map(row => ({
+      categoryId: row.categoryId,
+      categoryName: row.categoryName,
+      subcategories: rows
+        .filter(r => r.categoryId === row.categoryId)
+        .map(r => ({
+          subcategoryId: r.subcategoryId,
+          subcategoryName: r.subcategoryName
+        }))
+    }));
+    console.log('Processed categories:', categories); // Логування оброблених даних
     res.json(categories);
-  } catch {
-    res.status(500).json({ message: "Failed to fetch categories" });
+  } catch (err) {
+    console.error('Error fetching categories:', err); // Додано детальне логування помилки
+    res.status(500).json({ message: "Failed to fetch categories", error: err.message });
   }
 });
 
@@ -205,8 +208,11 @@ app.get("/api/products", async (req, res) => {
       }
     });
 
+    console.log('Products rows:', rows); // Логування результату запиту
+    console.log('Processed products:', products); // Логування оброблених даних
     res.json(products);
-  } catch {
+  } catch (err) {
+    console.error('Error fetching products:', err); // Додано детальне логування помилки
     res.status(500).json({ message: "Failed to fetch products" });
   }
 });
@@ -261,8 +267,10 @@ app.get("/api/products/:id", async (req, res) => {
     `, [productId]);
 
     product.variants = variantRows;
+    console.log('Product details:', product); // Логування результату
     res.json(product);
-  } catch {
+  } catch (err) {
+    console.error('Error fetching product by ID:', err); // Додано детальне логування помилки
     res.status(500).json({ error: "Server error" });
   }
 });

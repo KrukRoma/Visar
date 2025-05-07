@@ -10,12 +10,12 @@ const helmet = require("helmet");
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-app.use((req, res, next) => {
-  if (req.protocol === 'http' && process.env.NODE_ENV === 'production') {
-    return res.redirect(301, `https://${req.headers.host}${req.url}`);
-  }
-  next();
-});
+// app.use((req, res, next) => {
+//   if (req.protocol === 'http' && process.env.NODE_ENV === 'production') {
+//     return res.redirect(301, `https://${req.headers.host}${req.url}`);
+//   }
+//   next();
+// });
 
 app.use(express.json());
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));

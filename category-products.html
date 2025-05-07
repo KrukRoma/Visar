@@ -574,23 +574,34 @@
     let isCatalogLoaded = false;
 
     async function loadCatalog() {
-        if (isCatalogLoaded) return;
-        const catalogContainer = document.getElementById("dynamic-catalog");
-        try {
-            const response = await fetch(`${API_URL}/api/categories`);
-            if (!response.ok) throw new Error(`HTTP помилка: ${response.status}`);
-            const categories = await response.json();
+    const catalogContainers = document.querySelectorAll('#dynamic-catalog, #mobile-catalog');
+    if (catalogContainers.length === 0) return;
+    try {
+        console.log('Fetching categories from:', `${API_URL}/api/categories`);
+        const response = await fetch(`${API_URL}/api/categories`);
+        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+        const categories = await response.json();
+        catalogContainers.forEach(catalogContainer => {
             catalogContainer.innerHTML = '';
+            const allProductsItem = document.createElement('div');
+            allProductsItem.classList.add('dropdown-item');
+            const allProductsLink = document.createElement('a');
+            allProductsLink.href = '/category-products.html';
+            allProductsLink.textContent = 'Каталог товарів';
+            allProductsItem.appendChild(allProductsLink);
+            catalogContainer.appendChild(allProductsItem);
             categories.forEach(category => {
                 const categoryItem = createCategoryItem(category);
                 catalogContainer.appendChild(categoryItem);
             });
-            isCatalogLoaded = true;
-        } catch (error) {
-            console.error("Помилка завантаження каталогу:", error);
-            catalogContainer.innerHTML = "<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>";
-        }
+        });
+    } catch (error) {
+        console.error('Помилка завантаження каталогу:', error);
+        catalogContainers.forEach(catalogContainer => {
+            catalogContainer.innerHTML = '<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>';
+        });
     }
+}
 
     function createCategoryItem(category) {
         const categoryItem = document.createElement("div");

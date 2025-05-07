@@ -219,58 +219,61 @@ app.get("/api/products", async (req, res) => {
 
 app.get("/api/products/:id", async (req, res) => {
   const productId = req.params.id;
+  console.log(`Fetching product with ID: ${productId}`);
   try {
-    const [productRows] = await pool.query(`
-      SELECT 
-        p.ProductID AS productId,
-        p.Name AS productName,
-        p.Photo AS productPhoto,
-        p.Description AS productDescription,
-        c.CategoryID AS categoryId,
-        c.CategoryName AS categoryName,
-        sc.SubcategoryID AS subcategoryId,
-        sc.SubcategoryName AS subcategoryName
-      FROM Products p
-      LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
-      LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
-      WHERE p.ProductID = ?
-    `, [productId]);
+      const [productRows] = await pool.query(`
+          SELECT 
+              p.ProductID AS productId,
+              p.Name AS productName,
+              p.Photo AS productPhoto,
+              p.Description AS productDescription,
+              c.CategoryID AS categoryId,
+              c.CategoryName AS categoryName,
+              sc.SubcategoryID AS subcategoryId,
+              sc.SubcategoryName AS subcategoryName
+          FROM Products p
+          LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
+          LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
+          WHERE p.ProductID = ?
+      `, [productId]);
 
-    if (productRows.length === 0) {
-      return res.status(404).json({ error: "Product not found" });
-    }
+      if (productRows.length === 0) {
+          console.log(`Product with ID ${productId} not found`);
+          return res.status(404).json({ error: "Product not found" });
+      }
 
-    const product = {
-      id: productRows[0].productId,
-      name: productRows[0].productName,
-      photo: productRows[0].productPhoto ? `/${productRows[0].productPhoto}` : null,
-      description: productRows[0].productDescription,
-      category: {
-        id: productRows[0].categoryId,
-        name: productRows[0].categoryName
-      },
-      subcategory: productRows[0].subcategoryId ? {
-        id: productRows[0].subcategoryId,
-        name: productRows[0].subcategoryName
-      } : null,
-      variants: []
-    };
+      const product = {
+          id: productRows[0].productId,
+          name: productRows[0].productName,
+          photo: productRows[0].productPhoto ? `/${productRows[0].productPhoto}` : null,
+          description: productRows[0].productDescription,
+          category: {
+              id: productRows[0].categoryId,
+              name: productRows[0].categoryName
+          },
+          subcategory: productRows[0].subcategoryId ? {
+              id: productRows[0].subcategoryId,
+              name: productRows[0].subcategoryName
+          } : null,
+          variants: []
+      };
 
-    const [variantRows] = await pool.query(`
-      SELECT 
-        VariantID AS id,
-        Size AS size,
-        Transparency AS transparency,
-        Price AS price
-      FROM ProductVariants
-      WHERE ProductID = ?
-    `, [productId]);
+      const [variantRows] = await pool.query(`
+          SELECT 
+              VariantID AS id,
+              Size AS size,
+              Transparency AS transparency,
+              Price AS price
+          FROM ProductVariants
+          WHERE ProductID = ?
+      `, [productId]);
 
-    product.variants = variantRows;
-    console.log('Product details:', product); 
+      product.variants = variantRows;
+      console.log('Product details:', product);
+      res.json(product); // Додаємо повернення відповіді
   } catch (err) {
-    console.error('Error fetching product by ID:', err); 
-    res.status(500).json({ error: "Server error" });
+      console.error('Error fetching product by ID:', err);
+      res.status(500).json({ error: "Server error" });
   }
 });
 

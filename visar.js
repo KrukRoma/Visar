@@ -103,26 +103,17 @@ async function loadCatalog() {
 
         // Фільтруємо категорії та підкатегорії
         const validCategories = categories
-            .filter(category => category.categoryId && category.categoryName)
+            .filter(category => category.CategoryID && category.CategoryName)
             .map(category => ({
                 ...category,
-                subcategories: (category.subcategories || []).filter(sub => sub.subcategoryId && sub.subcategoryName)
+                Subcategories: (category.Subcategories || []).filter(sub => sub.SubcategoryID && sub.SubcategoryName)
             }));
         console.log('Valid categories:', validCategories);
 
         catalogContainers.forEach(catalogContainer => {
             catalogContainer.innerHTML = '';
 
-            // Додаємо пункт "Каталог товарів"
-            const allProductsItem = document.createElement('div');
-            allProductsItem.classList.add('dropdown-item');
-            const allProductsLink = document.createElement('a');
-            allProductsLink.href = '/category-products.html';
-            allProductsLink.textContent = 'Каталог товарів';
-            allProductsItem.appendChild(allProductsLink);
-            catalogContainer.appendChild(allProductsItem);
-
-            // Додаємо категорії
+            // НЕ додаємо пункт "Каталог товарів"
             validCategories.forEach(category => {
                 const categoryItem = createCategoryItem(category);
                 catalogContainer.appendChild(categoryItem);
@@ -141,21 +132,21 @@ function createCategoryItem(category) {
     const categoryItem = document.createElement('div');
     categoryItem.classList.add('dropdown-item');
 
-    if (category.subcategories && category.subcategories.length > 0) {
+    if (category.Subcategories && category.Subcategories.length > 0) {
         categoryItem.classList.add('has-submenu');
         const categoryLink = document.createElement('a');
-        categoryLink.href = `/category-products.html?categoryId=${category.categoryId}`;
+        categoryLink.href = `/category-products.html?categoryId=${category.CategoryID}`;
         categoryLink.classList.add('submenu-toggle');
-        categoryLink.textContent = category.categoryName || 'Без назви';
+        categoryLink.textContent = category.CategoryName || 'Без назви';
         categoryLink.innerHTML += ' <i class="fas fa-chevron-right"></i>';
 
         const subMenu = document.createElement('div');
         subMenu.classList.add('submenu');
 
-        category.subcategories.forEach(subcategory => {
+        category.Subcategories.forEach(subcategory => {
             const subcategoryLink = document.createElement('a');
-            subcategoryLink.href = `/category-products.html?subcategoryId=${subcategory.subcategoryId}`;
-            subcategoryLink.textContent = subcategory.subcategoryName || 'Без назви';
+            subcategoryLink.href = `/category-products.html?subcategoryId=${subcategory.SubcategoryID}`;
+            subcategoryLink.textContent = subcategory.SubcategoryName || 'Без назви';
             subMenu.appendChild(subcategoryLink);
         });
 
@@ -163,8 +154,8 @@ function createCategoryItem(category) {
         categoryItem.appendChild(subMenu);
     } else {
         const categoryLink = document.createElement('a');
-        categoryLink.href = `/category-products.html?categoryId=${category.categoryId}`;
-        categoryLink.textContent = category.categoryName || 'Без назви';
+        categoryLink.href = `/category-products.html?categoryId=${category.CategoryID}`;
+        categoryLink.textContent = category.CategoryName || 'Без назви';
         categoryItem.appendChild(categoryLink);
     }
 

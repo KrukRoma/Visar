@@ -127,10 +127,10 @@ app.get("/api/categories", async (req, res) => {
   try {
       const [rows] = await pool.query(`
           SELECT 
-              c.CategoryID AS categoryId, 
-              c.CategoryName AS categoryName, 
-              sc.SubcategoryID AS subcategoryId, 
-              sc.SubcategoryName AS subcategoryName
+              c.CategoryID AS CategoryID, 
+              c.CategoryName AS CategoryName, 
+              sc.SubcategoryID AS SubcategoryID, 
+              sc.SubcategoryName AS SubcategoryName
           FROM Categories c
           LEFT JOIN Subcategories sc ON c.CategoryID = sc.CategoryID
           WHERE c.CategoryName IS NOT NULL AND c.CategoryID IS NOT NULL
@@ -140,17 +140,17 @@ app.get("/api/categories", async (req, res) => {
       // Групуємо категорії та підкатегорії
       const categoryMap = new Map();
       rows.forEach(row => {
-          if (!categoryMap.has(row.categoryId)) {
-              categoryMap.set(row.categoryId, {
-                  categoryId: row.categoryId,
-                  categoryName: row.categoryName,
-                  subcategories: []
+          if (!categoryMap.has(row.CategoryID)) {
+              categoryMap.set(row.CategoryID, {
+                  CategoryID: row.CategoryID,
+                  CategoryName: row.CategoryName,
+                  Subcategories: []
               });
           }
-          if (row.subcategoryId && row.subcategoryName) {
-              categoryMap.get(row.categoryId).subcategories.push({
-                  subcategoryId: row.subcategoryId,
-                  subcategoryName: row.subcategoryName
+          if (row.SubcategoryID && row.SubcategoryName) {
+              categoryMap.get(row.CategoryID).Subcategories.push({
+                  SubcategoryID: row.SubcategoryID,
+                  SubcategoryName: row.SubcategoryName
               });
           }
       });

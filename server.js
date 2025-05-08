@@ -165,7 +165,8 @@ app.get("/api/categories", async (req, res) => {
 
 app.get("/api/products", async (req, res) => {
   try {
-    const [rows] = await pool.query(`
+    const { categoryId, subcategoryId } = req.query; // Отримуємо параметри з запиту
+    let query = `
       SELECT 
         p.ProductID AS productId,
         p.Name AS productName,
@@ -183,7 +184,29 @@ app.get("/api/products", async (req, res) => {
       LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
       LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
       LEFT JOIN ProductVariants pv ON p.ProductID = pv.ProductID
-    `);
+    `;
+    
+    const queryParams = [];
+    const conditions = [];
+
+    // Додаємо фільтрацію за categoryId
+    if (categoryId) {
+      conditions.push(`p.CategoryID = ?`);
+      queryParams.push(categoryId);
+    }
+
+    // Додаємо фільтрацію за subcategoryId
+    if (subcategoryId) {
+      conditions.push(`p.SubcategoryID = ?`);
+      queryParams.push(subcategoryId);
+    }
+
+    // Якщо є умови фільтрації, додаємо їх до запиту
+    if (conditions.length > 0) {
+      query += ` WHERE ${conditions.join(' AND ')}`;
+    }
+
+    const [rows] = await pool.query(query, queryParams);
 
     const products = [];
     const productsMap = new Map();
@@ -219,12 +242,13 @@ app.get("/api/products", async (req, res) => {
       }
     });
 
-    console.log('Products rows:', rows); 
-    console.log('Processed products:', products); 
+    console.log('Query parameters:', { categoryId, subcategoryId });
+    console.log('Products rows:', rows);
+    console.log('Processed products:', products);
     res.json(products);
   } catch (err) {
-    console.error('Error fetching products:', err); 
-    res.status(500).json({ message: "Failed to fetch products" });
+    console.error('Error fetching products:', err);
+    res.status(500).json({ message: "Failed to fetch products", error: err.message });
   }
 });
 

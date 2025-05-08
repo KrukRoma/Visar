@@ -165,90 +165,84 @@ app.get("/api/categories", async (req, res) => {
 
 app.get("/api/products", async (req, res) => {
   try {
-    const { categoryId, subcategoryId } = req.query; // Отримуємо параметри з запиту
-    let query = `
-      SELECT 
-        p.ProductID AS productId,
-        p.Name AS productName,
-        p.Photo AS productPhoto,
-        p.Description AS productDescription,
-        c.CategoryID AS categoryId,
-        c.CategoryName AS categoryName,
-        sc.SubcategoryID AS subcategoryId,
-        sc.SubcategoryName AS subcategoryName,
-        pv.VariantID AS variantId,
-        pv.Size AS variantSize,
-        pv.Transparency AS variantTransparency,
-        pv.Price AS variantPrice
-      FROM Products p
-      LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
-      LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
-      LEFT JOIN ProductVariants pv ON p.ProductID = pv.ProductID
-    `;
-    
-    const queryParams = [];
-    const conditions = [];
+      const { categoryId, subcategoryId } = req.query;
+      let query = `
+          SELECT 
+              p.ProductID AS productId,
+              p.Name AS productName,
+              p.Photo AS productPhoto,
+              p.Description AS productDescription,
+              c.CategoryID AS categoryId,
+              c.CategoryName AS categoryName,
+              sc.SubcategoryID AS subcategoryId,
+              sc.SubcategoryName AS subcategoryName,
+              pv.VariantID AS variantId,
+              pv.Size AS variantSize,
+              pv.Transparency AS variantTransparency,
+              pv.Price AS variantPrice
+          FROM Products p
+          LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
+          LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
+          LEFT JOIN ProductVariants pv ON p.ProductID = pv.ProductID
+      `;
+      
+      const queryParams = [];
+      const conditions = [];
 
-    // Додаємо фільтрацію за categoryId
-    if (categoryId) {
-      conditions.push(`p.CategoryID = ?`);
-      queryParams.push(categoryId);
-    }
-
-    // Додаємо фільтрацію за subcategoryId
-    if (subcategoryId) {
-      conditions.push(`p.SubcategoryID = ?`);
-      queryParams.push(subcategoryId);
-    }
-
-    // Якщо є умови фільтрації, додаємо їх до запиту
-    if (conditions.length > 0) {
-      query += ` WHERE ${conditions.join(' AND ')}`;
-    }
-
-    const [rows] = await pool.query(query, queryParams);
-
-    const products = [];
-    const productsMap = new Map();
-
-    rows.forEach((row) => {
-      if (!productsMap.has(row.productId)) {
-        const newProduct = {
-          id: row.productId,
-          name: row.productName,
-          photo: row.productPhoto ? `/${row.productPhoto}` : null,
-          description: row.productDescription,
-          category: {
-            id: row.categoryId,
-            name: row.categoryName
-          },
-          subcategory: row.subcategoryId ? {
-            id: row.subcategoryId,
-            name: row.subcategoryName
-          } : null,
-          variants: []
-        };
-        productsMap.set(row.productId, newProduct);
-        products.push(newProduct);
+      if (categoryId) {
+          conditions.push(`p.CategoryID = ?`);
+          queryParams.push(categoryId);
+      }
+      if (subcategoryId) {
+          conditions.push(`p.SubcategoryID = ?`);
+          queryParams.push(subcategoryId);
+      }
+      if (conditions.length > 0) {
+          query += ` WHERE ${conditions.join(' AND ')}`;
       }
 
-      if (row.variantId) {
-        productsMap.get(row.productId).variants.push({
-          id: row.variantId,
-          size: row.variantSize,
-          transparency: row.variantTransparency,
-          price: row.variantPrice
-        });
-      }
-    });
+      const [rows] = await pool.query(query, queryParams);
+      const products = [];
+      const productsMap = new Map();
 
-    console.log('Query parameters:', { categoryId, subcategoryId });
-    console.log('Products rows:', rows);
-    console.log('Processed products:', products);
-    res.json(products);
+      rows.forEach((row) => {
+          if (!productsMap.has(row.productId)) {
+              const newProduct = {
+                  id: row.productId,
+                  name: row.productName,
+                  photo: row.productPhoto ? `/${row.productPhoto}` : null,
+                  description: row.productDescription,
+                  category: {
+                      id: row.categoryId,
+                      name: row.categoryName
+                  },
+                  subcategory: row.subcategoryId ? {
+                      id: row.subcategoryId,
+                      name: row.subcategoryName
+                  } : null,
+                  variants: []
+              };
+              productsMap.set(row.productId, newProduct);
+              products.push(newProduct);
+          }
+
+          if (row.variantId) {
+              productsMap.get(row.productId).variants.push({
+                  id: row.variantId,
+                  size: row.variantSize,
+                  transparency: row.variantTransparency,
+                  price: row.variantPrice
+              });
+          }
+      });
+
+      console.log('Query parameters:', { categoryId, subcategoryId });
+      console.log('Products rows:', rows);
+      console.log('Processed products:', products);
+      res.json(products);
   } catch (err) {
-    console.error('Error fetching products:', err);
-    res.status(500).json({ message: "Failed to fetch products", error: err.message });
+      console.error('Error fetching products:', err);
+      res.status(500).json({ message: "Failed to fetch products", error: err.message });
   }
 });
 

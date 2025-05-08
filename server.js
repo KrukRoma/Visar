@@ -133,7 +133,6 @@ app.get("/api/categories", async (req, res) => {
               sc.SubcategoryName AS SubcategoryName
           FROM Categories c
           LEFT JOIN Subcategories sc ON c.CategoryID = sc.CategoryID
-          WHERE c.CategoryName IS NOT NULL AND c.CategoryID IS NOT NULL
       `);
       console.log('Categories rows:', rows);
 

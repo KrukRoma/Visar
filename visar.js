@@ -1,10 +1,19 @@
 const API_URL = window.API_URL || (window.location.protocol === 'https:' ? 'https://www.visar.com.ua' : '');
+
 document.addEventListener('DOMContentLoaded', function () {
-    if (window.location.hash) {
-        history.replaceState(null, null, window.location.pathname);
-    }
+    const hash = window.location.hash;
 
     window.scrollTo({ top: 0, behavior: 'instant' });
+
+    if (hash) {
+        const target = document.querySelector(hash);
+        if (target) {
+            setTimeout(() => {
+                target.scrollIntoView({ behavior: 'smooth' });
+                history.replaceState(null, null, window.location.pathname);
+            }, 100);
+        }
+    }
 
     const mobileMenuToggle = document.querySelector('.mobile-menu-toggle');
     const mobileMenu = document.querySelector('.mobile-menu');
@@ -43,7 +52,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 const targetSection = document.querySelector('#why-need');
                 if (targetSection) {
                     window.scrollTo({
-                        top: targetSection.offsetTop - 100, // Зміщення для врахування фіксованої шапки
+                        top: targetSection.offsetTop - 100,
                         behavior: 'smooth'
                     });
                 }
@@ -64,18 +73,22 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     });
 
-    closeBtn.addEventListener('click', () => {
-        modal.style.display = 'none';
-    });
-
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) {
+    if (closeBtn) {
+        closeBtn.addEventListener('click', () => {
             modal.style.display = 'none';
-        }
-    });
+        });
+    }
+
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+    }
 
     document.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.style.display === 'flex') {
+        if (e.key === 'Escape' && modal && modal.style.display === 'flex') {
             modal.style.display = 'none';
         }
     });
@@ -104,19 +117,17 @@ async function loadCatalog() {
         const categories = await response.json();
         console.log('Received categories:', categories);
 
-        // Фільтруємо категорії та підкатегорії
         const validCategories = categories
             .filter(category => category.CategoryID && category.CategoryName)
             .map(category => ({
                 ...category,
                 Subcategories: (category.Subcategories || []).filter(sub => sub.SubcategoryID && sub.SubcategoryName)
             }));
+
         console.log('Valid categories:', validCategories);
 
         catalogContainers.forEach(catalogContainer => {
             catalogContainer.innerHTML = '';
-
-            // НЕ додаємо пункт "Каталог товарів"
             validCategories.forEach(category => {
                 const categoryItem = createCategoryItem(category);
                 catalogContainer.appendChild(categoryItem);

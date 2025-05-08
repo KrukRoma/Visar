@@ -16,10 +16,14 @@ document.addEventListener('DOMContentLoaded', function () {
     // Завантаження каталогу
     loadCatalog();
 
-    // Обробка навігаційного меню
+    // Обробка мобільного меню
     const mobileMenuBtn = document.querySelector('#mobile-menu-btn');
     const mobileMenu = document.querySelector('#mobile-menu');
     const mobileMenuClose = document.querySelector('#mobile-menu-close');
+
+    console.log('Mobile menu button:', mobileMenuBtn);
+    console.log('Mobile menu:', mobileMenu);
+    console.log('Mobile menu close:', mobileMenuClose);
 
     if (mobileMenuBtn && mobileMenu && mobileMenuClose) {
         console.log('Mobile menu elements found');
@@ -33,7 +37,7 @@ document.addEventListener('DOMContentLoaded', function () {
             mobileMenu.classList.remove('active');
         });
     } else {
-        console.error('Mobile menu elements not found');
+        console.warn('Some mobile menu elements not found, skipping mobile menu initialization');
     }
 
     // Обробка dropdown меню
@@ -142,7 +146,10 @@ function createCategoryItem(category) {
 async function loadCatalog() {
     const catalogContainers = document.querySelectorAll('#dynamic-catalog, #mobile-catalog');
     console.log('Catalog containers found:', catalogContainers.length);
-    if (catalogContainers.length === 0) return;
+    if (catalogContainers.length === 0) {
+        console.warn('No catalog containers found, skipping catalog load');
+        return;
+    }
 
     try {
         console.log('Fetching categories from:', `${API_URL}/api/categories`);
@@ -151,6 +158,7 @@ async function loadCatalog() {
             new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 5000))
         ]);
         console.log('Response status:', response.status);
+        console.log('Response headers:', [...response.headers.entries()]);
         if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
         const categories = await response.json();
         console.log('Received categories:', categories);
@@ -164,13 +172,14 @@ async function loadCatalog() {
         console.log('Valid categories:', validCategories);
 
         catalogContainers.forEach(catalogContainer => {
-            console.log('Clearing container:', catalogContainer.id);
+            console.log('Processing container:', catalogContainer.id);
             catalogContainer.innerHTML = '';
             validCategories.forEach(category => {
                 const categoryItem = createCategoryItem(category);
                 console.log('Appending category:', category.CategoryName, categoryItem.outerHTML);
                 catalogContainer.appendChild(categoryItem);
             });
+            console.log('Container updated:', catalogContainer.id, catalogContainer.innerHTML);
         });
     } catch (error) {
         console.error('Error loading catalog:', error.message);

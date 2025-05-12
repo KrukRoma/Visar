@@ -121,6 +121,13 @@ async function loadCategoryProducts() {
             }
         }
 
+        // Сортування: продукти з subcategoryId = 2 першими
+        filteredProducts = filteredProducts.sort((a, b) => {
+            const aIsSubcategory2 = a.subcategory && parseInt(a.subcategory.id) === 2 ? 0 : 1;
+            const bIsSubcategory2 = b.subcategory && parseInt(b.subcategory.id) === 2 ? 0 : 1;
+            return aIsSubcategory2 - bIsSubcategory2;
+        });
+
         categoryTitle.textContent = categoryName;
         skeletonTitle.style.display = "none";
         categoryTitle.classList.add("loaded");
@@ -138,6 +145,7 @@ async function loadCategoryProducts() {
         const endIndex = startIndex + productsPerPage;
         const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
+        // Решта коду без змін
         productsGrid.innerHTML = '';
         currentProducts.forEach(product => {
             const productCard = document.createElement("div");

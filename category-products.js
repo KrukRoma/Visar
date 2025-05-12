@@ -1,13 +1,18 @@
 let isCatalogLoaded = false;
 
-    async function loadCatalog() {
+async function loadCatalog() {
     const catalogContainers = document.querySelectorAll('#dynamic-catalog, #mobile-catalog');
-    if (catalogContainers.length === 0) return;
+    if (catalogContainers.length === 0) {
+        console.warn('No catalog containers found');
+        return;
+    }
+
     try {
         console.log('Fetching categories from:', `${API_URL}/api/categories`);
         const response = await fetch(`${API_URL}/api/categories`);
         if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
         const categories = await response.json();
+
         catalogContainers.forEach(catalogContainer => {
             catalogContainer.innerHTML = '';
             const allProductsItem = document.createElement('div');
@@ -17,6 +22,7 @@ let isCatalogLoaded = false;
             allProductsLink.textContent = 'Каталог товарів';
             allProductsItem.appendChild(allProductsLink);
             catalogContainer.appendChild(allProductsItem);
+
             categories.forEach(category => {
                 const categoryItem = createCategoryItem(category);
                 catalogContainer.appendChild(categoryItem);
@@ -30,34 +36,38 @@ let isCatalogLoaded = false;
     }
 }
 
-    function createCategoryItem(category) {
-        const categoryItem = document.createElement("div");
-        categoryItem.classList.add("dropdown-item");
-        if (category.subcategories && category.subcategories.length > 0) {
-            categoryItem.classList.add("has-submenu");
-            const categoryLink = document.createElement("a");
-            categoryLink.href = `category-products.html?categoryId=${category.id}`;
-            categoryLink.classList.add("submenu-toggle");
-            categoryLink.textContent = category.name;
-            categoryLink.innerHTML += ' <i class="fas fa-chevron-right"></i>';
-            const subMenu = document.createElement("div");
-            subMenu.classList.add("submenu");
-            category.subcategories.forEach(subcategory => {
-                const subcategoryLink = document.createElement("a");
-                subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.id}`;
-                subcategoryLink.textContent = subcategory.name;
-                subMenu.appendChild(subcategoryLink);
-            });
-            categoryItem.appendChild(categoryLink);
-            categoryItem.appendChild(subMenu);
-        } else {
-            const categoryLink = document.createElement("a");
-            categoryLink.href = `category-products.html?categoryId=${category.id}`;
-            categoryLink.textContent = category.name;
-            categoryItem.appendChild(categoryLink);
-        }
-        return categoryItem;
+function createCategoryItem(category) {
+    const categoryItem = document.createElement("div");
+    categoryItem.classList.add("dropdown-item");
+
+    if (category.Subcategories && category.Subcategories.length > 0) {
+        categoryItem.classList.add("has-submenu");
+        const categoryLink = document.createElement("a");
+        categoryLink.href = `category-products.html?categoryId=${category.CategoryID}`;
+        categoryLink.classList.add("submenu-toggle");
+        categoryLink.textContent = category.CategoryName || 'Без назви';
+        categoryLink.innerHTML += ' <i class="fas fa-chevron-right"></i>';
+        const subMenu = document.createElement("div");
+        subMenu.classList.add("submenu");
+
+        category.Subcategories.forEach(subcategory => {
+            const subcategoryLink = document.createElement("a");
+            subcategoryLink.href = `category-products.html?subcategoryId=${subcategory.SubcategoryID}`;
+            subcategoryLink.textContent = subcategory.SubcategoryName || 'Без назви';
+            subMenu.appendChild(subcategoryLink);
+        });
+
+        categoryItem.appendChild(categoryLink);
+        categoryItem.appendChild(subMenu);
+    } else {
+        const categoryLink = document.createElement("a");
+        categoryLink.href = `category-products.html?categoryId=${category.CategoryID}`;
+        categoryLink.textContent = category.CategoryName || 'Без назви';
+        categoryItem.appendChild(categoryLink);
     }
+
+    return categoryItem;
+}
 
     async function loadCategoryProducts() {
         const categoryTitle = document.getElementById("category-title");

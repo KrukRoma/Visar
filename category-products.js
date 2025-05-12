@@ -71,6 +71,13 @@ async function loadCategoryProducts() {
     const categoryId = urlParams.get("categoryId");
     const subcategoryId = urlParams.get("subcategoryId");
     const page = parseInt(urlParams.get("page")) || 1;
+
+    // Перевірка коректності параметра page
+    if (isNaN(page) || page < 1) {
+        showCategoryNotFound();
+        return;
+    }
+
     const productsPerPage = 21;
 
     const hasInvalidParams = Array.from(urlParams.keys()).some(
@@ -145,7 +152,6 @@ async function loadCategoryProducts() {
         const endIndex = startIndex + productsPerPage;
         const currentProducts = filteredProducts.slice(startIndex, endIndex);
 
-        // Решта коду без змін
         productsGrid.innerHTML = '';
         currentProducts.forEach(product => {
             const productCard = document.createElement("div");
@@ -223,7 +229,7 @@ async function loadCategoryProducts() {
 
         if (page > 1) {
             const prevLink = document.createElement("a");
-            prevLink.href = `${baseUrl}&page=${page - 1}`;
+            prevLink.href = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=${page - 1}`;
             prevLink.classList.add("arrow");
             prevLink.innerHTML = "<";
             paginationContainer.appendChild(prevLink);
@@ -238,7 +244,7 @@ async function loadCategoryProducts() {
 
         if (startPage > 1) {
             const firstPage = document.createElement("a");
-            firstPage.href = `${baseUrl}&page=1`;
+            firstPage.href = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=1`;
             firstPage.textContent = "1";
             paginationContainer.appendChild(firstPage);
             if (startPage > 2) {
@@ -251,7 +257,7 @@ async function loadCategoryProducts() {
 
         for (let i = startPage; i <= endPage; i++) {
             const pageLink = document.createElement("a");
-            pageLink.href = `${baseUrl}&page=${i}`;
+            pageLink.href = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=${i}`;
             pageLink.textContent = i;
             if (i === page) pageLink.classList.add("active");
             paginationContainer.appendChild(pageLink);
@@ -265,14 +271,14 @@ async function loadCategoryProducts() {
                 paginationContainer.appendChild(dots);
             }
             const lastPage = document.createElement("a");
-            lastPage.href = `${baseUrl}&page=${totalPages}`;
+            lastPage.href = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=${totalPages}`;
             lastPage.textContent = totalPages;
             paginationContainer.appendChild(lastPage);
         }
 
         if (page < totalPages) {
             const nextLink = document.createElement("a");
-            nextLink.href = `${baseUrl}&page=${page + 1}`;
+            nextLink.href = `${baseUrl}${baseUrl.includes('?') ? '&' : '?'}page=${page + 1}`;
             nextLink.classList.add("arrow");
             nextLink.innerHTML = ">";
             paginationContainer.appendChild(nextLink);
@@ -314,80 +320,83 @@ async function loadCategoryProducts() {
     }
 }
 
+document.addEventListener("DOMContentLoaded", async () => {
+    await loadCatalog();
+    await loadCategoryProducts();
+    const modal = document.getElementById('contact-modal');
+    const contactLinks = document.querySelectorAll('.contact-link');
+    const closeBtn = document.querySelector('.close-btn');
 
-    document.addEventListener("DOMContentLoaded", async () => {
-        await loadCatalog();
-        await loadCategoryProducts();
-        const modal = document.getElementById('contact-modal');
-        const contactLinks = document.querySelectorAll('.contact-link');
-        const closeBtn = document.querySelector('.close-btn');
-
-        contactLinks.forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                modal.style.display = 'flex';
-            });
-        });
-
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        modal.addEventListener('click', (e) => {
-            if (e.target === modal) modal.style.display = 'none';
-        });
-
-        document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape' && modal.style.display === 'flex') modal.style.display = 'none';
+    contactLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            modal.style.display = 'flex';
         });
     });
 
-    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
-    window.addEventListener("beforeunload", () => {
-        const urlParams = new URLSearchParams(window.location.search);
-        const categoryId = urlParams.get("categoryId");
-        const subcategoryId = urlParams.get("subcategoryId");
-        const page = urlParams.get("page") || "1";
-        const categoryKey = categoryId ? `category-${categoryId}` : subcategoryId ? `subcategory-${subcategoryId}` : "all-products";
-        Object.keys(sessionStorage).forEach(key => {
-            if (key.startsWith('savedScrollPosition-')) sessionStorage.removeItem(key);
-        });
-        sessionStorage.setItem(`savedScrollPosition-${categoryKey}-page${page}`, window.scrollY);
-        sessionStorage.setItem(`lastVisitedPage-${categoryKey}`, page);
+    closeBtn.addEventListener('click', () => {
+        modal.style.display = 'none';
     });
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const observer = new MutationObserver(() => {
-            const productsGrid = document.getElementById('products-grid');
-            if (productsGrid && productsGrid.classList.contains('loaded')) {
-                const urlParams = new URLSearchParams(window.location.search);
-                const categoryId = urlParams.get("categoryId");
-                const subcategoryId = urlParams.get("subcategoryId");
-                const page = urlParams.get("page") || "1";
-                const categoryKey = categoryId ? `category-${categoryId}` : subcategoryId ? `subcategory-${subcategoryId}` : "all-products";
-                const previousPage = sessionStorage.getItem(`lastVisitedPage-${categoryKey}`);
-                const isPaginationChange = previousPage && previousPage !== page;
-                if (isPaginationChange) {
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) modal.style.display = 'none';
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.style.display === 'flex') modal.style.display = 'none';
+    });
+});
+
+window.addEventListener('popstate', () => {
+    loadCategoryProducts();
+});
+
+if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+window.addEventListener("beforeunload", () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const categoryId = urlParams.get("categoryId");
+    const subcategoryId = urlParams.get("subcategoryId");
+    const page = urlParams.get("page") || "1";
+    const categoryKey = categoryId ? `category-${categoryId}` : subcategoryId ? `subcategory-${subcategoryId}` : "all-products";
+    Object.keys(sessionStorage).forEach(key => {
+        if (key.startsWith('savedScrollPosition-')) sessionStorage.removeItem(key);
+    });
+    sessionStorage.setItem(`savedScrollPosition-${categoryKey}-page${page}`, window.scrollY);
+    sessionStorage.setItem(`lastVisitedPage-${categoryKey}`, page);
+});
+
+document.addEventListener("DOMContentLoaded", () => {
+    const observer = new MutationObserver(() => {
+        const productsGrid = document.getElementById('products-grid');
+        if (productsGrid && productsGrid.classList.contains('loaded')) {
+            const urlParams = new URLSearchParams(window.location.search);
+            const categoryId = urlParams.get("categoryId");
+            const subcategoryId = urlParams.get("subcategoryId");
+            const page = urlParams.get("page") || "1";
+            const categoryKey = categoryId ? `category-${categoryId}` : subcategoryId ? `subcategory-${subcategoryId}` : "all-products";
+            const previousPage = sessionStorage.getItem(`lastVisitedPage-${categoryKey}`);
+            const isPaginationChange = previousPage && previousPage !== page;
+            if (isPaginationChange) {
+                document.documentElement.style.scrollBehavior = "auto";
+                window.scrollTo(0, 0);
+                document.documentElement.style.scrollBehavior = "";
+            } else {
+                const savedScroll = sessionStorage.getItem(`savedScrollPosition-${categoryKey}-page${page}`);
+                if (savedScroll !== null) {
+                    document.documentElement.style.scrollBehavior = "auto";
+                    window.scrollTo(0, parseInt(savedScroll, 10));
+                    setTimeout(() => {
+                        document.documentElement.style.scrollBehavior = "";
+                    }, 100);
+                } else {
                     document.documentElement.style.scrollBehavior = "auto";
                     window.scrollTo(0, 0);
                     document.documentElement.style.scrollBehavior = "";
-                } else {
-                    const savedScroll = sessionStorage.getItem(`savedScrollPosition-${categoryKey}-page${page}`);
-                    if (savedScroll !== null) {
-                        document.documentElement.style.scrollBehavior = "auto";
-                        window.scrollTo(0, parseInt(savedScroll, 10));
-                        setTimeout(() => {
-                            document.documentElement.style.scrollBehavior = "";
-                        }, 100);
-                    } else {
-                        document.documentElement.style.scrollBehavior = "auto";
-                        window.scrollTo(0, 0);
-                        document.documentElement.style.scrollBehavior = "";
-                    }
                 }
-                sessionStorage.setItem(`lastVisitedPage-${categoryKey}`, page);
-                observer.disconnect();
             }
-        });
-        observer.observe(document.body, { childList: true, subtree: true });
+            sessionStorage.setItem(`lastVisitedPage-${categoryKey}`, page);
+            observer.disconnect();
+        }
     });
+    observer.observe(document.body, { childList: true, subtree: true });
+});

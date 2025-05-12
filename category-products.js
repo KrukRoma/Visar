@@ -15,14 +15,6 @@ async function loadCatalog() {
 
         catalogContainers.forEach(catalogContainer => {
             catalogContainer.innerHTML = '';
-            const allProductsItem = document.createElement('div');
-            allProductsItem.classList.add('dropdown-item');
-            const allProductsLink = document.createElement('a');
-            allProductsLink.href = '/category-products.html';
-            allProductsLink.textContent = 'Каталог товарів';
-            allProductsItem.appendChild(allProductsLink);
-            catalogContainer.appendChild(allProductsItem);
-
             categories.forEach(category => {
                 const categoryItem = createCategoryItem(category);
                 catalogContainer.appendChild(categoryItem);

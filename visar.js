@@ -1,4 +1,5 @@
-const API_URL = 'https://www.visar.com.ua';
+const API_URL = window.API_URL || (window.location.protocol === 'https:' ? 'https://www.visar.com.ua' : '');
+
 document.addEventListener('DOMContentLoaded', function () {
     const hash = window.location.hash;
 
@@ -104,7 +105,11 @@ window.addEventListener('load', () => {
 
 async function loadCatalog() {
     const catalogContainers = document.querySelectorAll('#dynamic-catalog, #mobile-catalog');
-    if (catalogContainers.length === 0) return;
+    console.log('Found catalog containers:', catalogContainers.length);
+    if (catalogContainers.length === 0) {
+        console.warn('No catalog containers found');
+        return;
+    }
 
     try {
         console.log('Fetching categories from:', `${API_URL}/api/categories`);
@@ -112,7 +117,10 @@ async function loadCatalog() {
             fetch(`${API_URL}/api/categories`),
             new Promise((_, reject) => setTimeout(() => reject(new Error('Request timeout')), 5000))
         ]);
-        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
+        if (!response.ok) {
+            console.error('HTTP error:', response.status, response.statusText);
+            throw new Error(`HTTP error: ${response.status}`);
+        }
         const categories = await response.json();
         console.log('Received categories:', categories);
 
@@ -133,7 +141,7 @@ async function loadCatalog() {
             });
         });
     } catch (error) {
-        console.error('Помилка завантаження каталогу:', error);
+        console.error('Error loading catalog:', error.message);
         catalogContainers.forEach(catalogContainer => {
             catalogContainer.innerHTML = '<p>Не вдалося завантажити каталог. Спробуйте пізніше.</p>';
         });
@@ -175,44 +183,4 @@ function createCategoryItem(category) {
     return categoryItem;
 }
 
-async function loadProducts() {
-    const urlParams = new URLSearchParams(window.location.search);
-    const categoryId = urlParams.get('categoryId');
-    const subcategoryId = urlParams.get('subcategoryId');
-    const sliderContainer = document.querySelector('.slider-container');
-    const sliderTrack = document.querySelector('.slider-track');
 
-    try {
-        let apiUrl = `${API_URL}/api/products`;
-        if (categoryId) {
-            apiUrl += `?categoryId=${categoryId}`;
-        } else if (subcategoryId) {
-            apiUrl += `?subcategoryId=${subcategoryId}`;
-        }
-
-        console.log('API_URL:', API_URL);
-        console.log('Fetching products from:', apiUrl);
-        const response = await fetch(apiUrl);
-        console.log('Response status:', response.status);
-        if (!response.ok) throw new Error(`HTTP error: ${response.status}`);
-        const products = await response.json();
-        console.log('Received products:', products);
-
-        if (products.length === 0) {
-            console.log('No products found for:', { categoryId, subcategoryId });
-            sliderTrack.innerHTML = '<p>Категорію не знайдено</p>';
-            return;
-        }
-
-        sliderTrack.innerHTML = '';
-        products.forEach(product => {
-            const slide = createProductSlide(product);
-            sliderTrack.appendChild(slide);
-        });
-
-        sliderContainer.classList.add('full-catalog');
-    } catch (error) {
-        console.error('Помилка завантаження продуктів:', error);
-        sliderTrack.innerHTML = '<p>Не вдалося завантажити продукти. Спробуйте пізніше.</p>';
-    }
-}

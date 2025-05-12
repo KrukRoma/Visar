@@ -163,6 +163,7 @@ app.get("/api/categories", async (req, res) => {
   }
 });
 
+
 app.get("/api/products", async (req, res) => {
   try {
       const { categoryId, subcategoryId } = req.query;

@@ -10,12 +10,16 @@ const helmet = require("helmet");
 const app = express();
 const PORT = process.env.PORT || 8080;
 
-// app.use((req, res, next) => {
-//   if (req.protocol === 'http' && process.env.NODE_ENV === 'production') {
-//     return res.redirect(301, `https://${req.headers.host}${req.url}`);
-//   }
-//   next();
-// });
+app.use((req, res, next) => {
+  const host = req.headers.host;
+
+  if (host === 'visar.com.ua') {
+    return res.redirect(301, `https://www.visar.com.ua${req.url}`);
+  }
+
+  next();
+});
+
 
 app.use(express.json());
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));

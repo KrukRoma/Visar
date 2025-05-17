@@ -12,14 +12,11 @@ const PORT = process.env.PORT || 8080;
 
 app.use((req, res, next) => {
   const host = req.headers.host;
-
   if (host === 'visar.com.ua') {
     return res.redirect(301, `https://www.visar.com.ua${req.url}`);
   }
-
   next();
 });
-
 
 app.use(express.json());
 app.use(cors({ origin: process.env.CORS_ORIGIN || '*' }));
@@ -92,9 +89,9 @@ const pool = mysql.createPool({
 
 pool.getConnection((err, connection) => {
   if (err) {
-    console.error('Failed to initialize database connection:', err);
+    // Лог видалено
   } else {
-    console.log('Database connection initialized successfully');
+    // Лог видалено
     connection.release();
   }
 });
@@ -102,10 +99,8 @@ pool.getConnection((err, connection) => {
 app.get("/api/health", async (req, res) => {
   try {
     const [rows] = await pool.query('SELECT 1');
-    console.log('Health check successful:', rows);
     res.status(200).json({ status: 'ok', message: 'Database connection is healthy' });
   } catch (err) {
-    console.error('Health check failed:', err);
     res.status(500).json({ status: 'error', message: 'Database connection error', error: err.message });
   }
 });
@@ -129,193 +124,178 @@ app.post("/api/products/upload", upload.single('photo'), async (req, res) => {
 
     res.json({ message: "Photo uploaded successfully", filePath });
   } catch (err) {
-    console.error('Error uploading photo:', err); 
     res.status(500).json({ error: "Server error" });
   }
 });
 
 app.get("/api/categories", async (req, res) => {
-  console.log('Received request for /api/categories');
   try {
-      const [rows] = await pool.query(`
-          SELECT 
-              c.CategoryID AS CategoryID, 
-              c.CategoryName AS CategoryName, 
-              sc.SubcategoryID AS SubcategoryID, 
-              sc.SubcategoryName AS SubcategoryName
-          FROM Categories c
-          LEFT JOIN Subcategories sc ON c.CategoryID = sc.CategoryID
-      `);
-      console.log('Categories rows:', rows);
+    const [rows] = await pool.query(`
+      SELECT 
+        c.CategoryID AS CategoryID, 
+        c.CategoryName AS CategoryName, 
+        sc.SubcategoryID AS SubcategoryID, 
+        sc.SubcategoryName AS SubcategoryName
+      FROM Categories c
+      LEFT JOIN Subcategories sc ON c.CategoryID = sc.CategoryID
+    `);
 
-      // Групуємо категорії та підкатегорії
-      const categoryMap = new Map();
-      rows.forEach(row => {
-          if (!categoryMap.has(row.CategoryID)) {
-              categoryMap.set(row.CategoryID, {
-                  CategoryID: row.CategoryID,
-                  CategoryName: row.CategoryName,
-                  Subcategories: []
-              });
-          }
-          if (row.SubcategoryID && row.SubcategoryName) {
-              categoryMap.get(row.CategoryID).Subcategories.push({
-                  SubcategoryID: row.SubcategoryID,
-                  SubcategoryName: row.SubcategoryName
-              });
-          }
-      });
+    const categoryMap = new Map();
+    rows.forEach(row => {
+      if (!categoryMap.has(row.CategoryID)) {
+        categoryMap.set(row.CategoryID, {
+          CategoryID: row.CategoryID,
+          CategoryName: row.CategoryName,
+          Subcategories: []
+        });
+      }
+      if (row.SubcategoryID && row.SubcategoryName) {
+        categoryMap.get(row.CategoryID).Subcategories.push({
+          SubcategoryID: row.SubcategoryID,
+          SubcategoryName: row.SubcategoryName
+        });
+      }
+    });
 
-      const categories = Array.from(categoryMap.values());
-      console.log('Processed categories:', categories);
-      res.json(categories);
+    const categories = Array.from(categoryMap.values());
+    res.json(categories);
   } catch (err) {
-      console.error('Error fetching categories:', err);
-      res.status(500).json({ message: "Failed to fetch categories", error: err.message });
+    res.status(500).json({ message: "Failed to fetch categories", error: err.message });
   }
 });
 
-
 app.get("/api/products", async (req, res) => {
   try {
-      const { categoryId, subcategoryId } = req.query;
-      let query = `
-          SELECT 
-              p.ProductID AS productId,
-              p.Name AS productName,
-              p.Photo AS productPhoto,
-              p.Description AS productDescription,
-              c.CategoryID AS categoryId,
-              c.CategoryName AS categoryName,
-              sc.SubcategoryID AS subcategoryId,
-              sc.SubcategoryName AS subcategoryName,
-              pv.VariantID AS variantId,
-              pv.Size AS variantSize,
-              pv.Transparency AS variantTransparency,
-              pv.Price AS variantPrice
-          FROM Products p
-          LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
-          LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
-          LEFT JOIN ProductVariants pv ON p.ProductID = pv.ProductID
-      `;
-      
-      const queryParams = [];
-      const conditions = [];
+    const { categoryId, subcategoryId } = req.query;
+    let query = `
+      SELECT 
+        p.ProductID AS productId,
+        p.Name AS productName,
+        p.Photo AS productPhoto,
+        p.Description AS productDescription,
+        c.CategoryID AS categoryId,
+        c.CategoryName AS categoryName,
+        sc.SubcategoryID AS subcategoryId,
+        sc.SubcategoryName AS subcategoryName,
+        pv.VariantID AS variantId,
+        pv.Size AS variantSize,
+        pv.Transparency AS variantTransparency,
+        pv.Price AS variantPrice
+      FROM Products p
+      LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
+      LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
+      LEFT JOIN ProductVariants pv ON p.ProductID = pv.ProductID
+    `;
+    
+    const queryParams = [];
+    const conditions = [];
 
-      if (categoryId) {
-          conditions.push(`p.CategoryID = ?`);
-          queryParams.push(categoryId);
+    if (categoryId) {
+      conditions.push(`p.CategoryID = ?`);
+      queryParams.push(categoryId);
+    }
+    if (subcategoryId) {
+      conditions.push(`p.SubcategoryID = ?`);
+      queryParams.push(subcategoryId);
+    }
+    if (conditions.length > 0) {
+      query += ` WHERE ${conditions.join(' AND ')}`;
+    }
+
+    const [rows] = await pool.query(query, queryParams);
+    const products = [];
+    const productsMap = new Map();
+
+    rows.forEach((row) => {
+      if (!productsMap.has(row.productId)) {
+        const newProduct = {
+          id: row.productId,
+          name: row.productName,
+          photo: row.productPhoto ? `/${row.productPhoto}` : null,
+          description: row.productDescription,
+          category: {
+            id: row.categoryId,
+            name: row.categoryName
+          },
+          subcategory: row.subcategoryId ? {
+            id: row.subcategoryId,
+            name: row.subcategoryName
+          } : null,
+          variants: []
+        };
+        productsMap.set(row.productId, newProduct);
+        products.push(newProduct);
       }
-      if (subcategoryId) {
-          conditions.push(`p.SubcategoryID = ?`);
-          queryParams.push(subcategoryId);
+
+      if (row.variantId) {
+        productsMap.get(row.productId).variants.push({
+          id: row.variantId,
+          size: row.variantSize,
+          transparency: row.variantTransparency,
+          price: row.variantPrice
+        });
       }
-      if (conditions.length > 0) {
-          query += ` WHERE ${conditions.join(' AND ')}`;
-      }
+    });
 
-      const [rows] = await pool.query(query, queryParams);
-      const products = [];
-      const productsMap = new Map();
-
-      rows.forEach((row) => {
-          if (!productsMap.has(row.productId)) {
-              const newProduct = {
-                  id: row.productId,
-                  name: row.productName,
-                  photo: row.productPhoto ? `/${row.productPhoto}` : null,
-                  description: row.productDescription,
-                  category: {
-                      id: row.categoryId,
-                      name: row.categoryName
-                  },
-                  subcategory: row.subcategoryId ? {
-                      id: row.subcategoryId,
-                      name: row.subcategoryName
-                  } : null,
-                  variants: []
-              };
-              productsMap.set(row.productId, newProduct);
-              products.push(newProduct);
-          }
-
-          if (row.variantId) {
-              productsMap.get(row.productId).variants.push({
-                  id: row.variantId,
-                  size: row.variantSize,
-                  transparency: row.variantTransparency,
-                  price: row.variantPrice
-              });
-          }
-      });
-
-      console.log('Query parameters:', { categoryId, subcategoryId });
-      console.log('Products rows:', rows);
-      console.log('Processed products:', products);
-      res.json(products);
+    res.json(products);
   } catch (err) {
-      console.error('Error fetching products:', err);
-      res.status(500).json({ message: "Failed to fetch products", error: err.message });
+    res.status(500).json({ message: "Failed to fetch products", error: err.message });
   }
 });
 
 app.get("/api/products/:id", async (req, res) => {
   const productId = req.params.id;
-  console.log(`Fetching product with ID: ${productId}`);
   try {
-      const [productRows] = await pool.query(`
-          SELECT 
-              p.ProductID AS productId,
-              p.Name AS productName,
-              p.Photo AS productPhoto,
-              p.Description AS productDescription,
-              c.CategoryID AS categoryId,
-              c.CategoryName AS categoryName,
-              sc.SubcategoryID AS subcategoryId,
-              sc.SubcategoryName AS subcategoryName
-          FROM Products p
-          LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
-          LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
-          WHERE p.ProductID = ?
-      `, [productId]);
+    const [productRows] = await pool.query(`
+      SELECT 
+        p.ProductID AS productId,
+        p.Name AS productName,
+        p.Photo AS productPhoto,
+        p.Description AS productDescription,
+        c.CategoryID AS categoryId,
+        c.CategoryName AS categoryName,
+        sc.SubcategoryID AS subcategoryId,
+        sc.SubcategoryName AS subcategoryName
+      FROM Products p
+      LEFT JOIN Categories c ON p.CategoryID = c.CategoryID
+      LEFT JOIN Subcategories sc ON p.SubcategoryID = sc.SubcategoryID
+      WHERE p.ProductID = ?
+    `, [productId]);
 
-      if (productRows.length === 0) {
-          console.log(`Product with ID ${productId} not found`);
-          return res.status(404).json({ error: "Product not found" });
-      }
+    if (productRows.length === 0) {
+      return res.status(404).json({ error: "Product not found" });
+    }
 
-      const product = {
-          id: productRows[0].productId,
-          name: productRows[0].productName,
-          photo: productRows[0].productPhoto ? `/${productRows[0].productPhoto}` : null,
-          description: productRows[0].productDescription,
-          category: {
-              id: productRows[0].categoryId,
-              name: productRows[0].categoryName
-          },
-          subcategory: productRows[0].subcategoryId ? {
-              id: productRows[0].subcategoryId,
-              name: productRows[0].subcategoryName
-          } : null,
-          variants: []
-      };
+    const product = {
+      id: productRows[0].productId,
+      name: productRows[0].productName,
+      photo: productRows[0].productPhoto ? `/${row.productPhoto}` : null,
+      description: productRows[0].productDescription,
+      category: {
+        id: productRows[0].categoryId,
+        name: productRows[0].categoryName
+      },
+      subcategory: productRows[0].subcategoryId ? {
+        id: productRows[0].subcategoryId,
+        name: productRows[0].subcategoryName
+      } : null,
+      variants: []
+    };
 
-      const [variantRows] = await pool.query(`
-          SELECT 
-              VariantID AS id,
-              Size AS size,
-              Transparency AS transparency,
-              Price AS price
-          FROM ProductVariants
-          WHERE ProductID = ?
-      `, [productId]);
+    const [variantRows] = await pool.query(`
+      SELECT 
+        VariantID AS id,
+        Size AS size,
+        Transparency AS transparency,
+        Price AS price
+      FROM ProductVariants
+      WHERE ProductID = ?
+    `, [productId]);
 
-      product.variants = variantRows;
-      console.log('Product details:', product);
-      res.json(product); // Додаємо повернення відповіді
+    product.variants = variantRows;
+    res.json(product);
   } catch (err) {
-      console.error('Error fetching product by ID:', err);
-      res.status(500).json({ error: "Server error" });
+    res.status(500).json({ error: "Server error" });
   }
 });
 

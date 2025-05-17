@@ -33,6 +33,7 @@ app.use(
         "https://www.youtube.com",
         "https://s.ytimg.com",
         "https://cdnjs.cloudflare.com",
+        "https://www.googletagmanager.com",
         "'unsafe-inline'"
       ],
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
@@ -43,6 +44,7 @@ app.use(
     }
   })
 );
+
 app.use(express.static(path.join(__dirname)));
 app.use('/images', express.static(path.join(__dirname, 'images')));
 

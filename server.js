@@ -329,7 +329,7 @@ app.use((req, res) => {
 
 app.listen(PORT, '0.0.0.0', () => {
   const host = process.env.NODE_ENV === 'production'
-    ? process.env.API_URL || 'https://visar.com.ua'
+    ? process.env.API_URL || 'https://www.visar.com.ua'
     : `http://localhost:${PORT}`;
   console.log(`Server running at ${host}`);
 });

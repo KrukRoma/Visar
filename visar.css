@@ -177,7 +177,7 @@ nav {
 .dropdown-item {
   display: flex;
   align-items: center;
-  justify-content: space-between; 
+  justify-content: space-between;
   height: 50px;
   padding: 0 20px;
   color: var(--light-color);
@@ -189,7 +189,7 @@ nav {
 }
 
 .dropdown-item:not(.has-submenu) {
-  justify-content: center; 
+  justify-content: center;
 }
 
 .dropdown-item:last-child {
@@ -314,7 +314,7 @@ nav {
   color: var(--light-color);
   font-size: 14px;
   flex-shrink: 0;
-  margin-right: 60px; 
+  margin-right: 60px;
 }
 
 .phone,
@@ -585,7 +585,7 @@ nav {
 }
 
 .product-slider {
-  padding: 100px 0 50px 0; 
+  padding: 100px 0 50px 0;
   background-color: var(--dark-color);
 }
 
@@ -685,7 +685,7 @@ nav {
   .video-container iframe {
     height: 300px;
   }
-  
+
   .video-container {
     padding-left: 15px;
     padding-right: 15px;
@@ -696,7 +696,7 @@ nav {
   .video-container iframe {
     height: 250px;
   }
-  
+
   .video-container {
     padding-left: 20px;
     padding-right: 20px;
@@ -1288,4 +1288,14 @@ footer {
     opacity: 1;
     transform: translateX(0);
   }
+}
+
+.modal-content .phone a {
+  color: var(--dark-color);
+  text-decoration: none;
+}
+
+.modal-content .phone i {
+  color: #e63946;
+  font-size: 18px;
 }

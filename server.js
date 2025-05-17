@@ -39,7 +39,13 @@ app.use(
       styleSrc: ["'self'", "'unsafe-inline'", "https://fonts.googleapis.com", "https://cdnjs.cloudflare.com"],
       fontSrc: ["'self'", "https://fonts.gstatic.com", "https://cdnjs.cloudflare.com"],
       imgSrc: ["'self'", "data:", "https://www.visar.com.ua"],
-      connectSrc: ["'self'", "https://www.visar.com.ua", "https://www.youtube.com", "https://s.ytimg.com"],
+      connectSrc: [
+        "'self'",
+        "https://www.visar.com.ua",
+        "https://www.youtube.com",
+        "https://s.ytimg.com",
+        "https://www.google-analytics.com"
+      ],
       mediaSrc: ["'self'", "https://www.youtube.com", "https://s.ytimg.com"]
     }
   })

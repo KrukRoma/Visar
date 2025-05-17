@@ -324,20 +324,6 @@ nav {
   gap: 5px;
 }
 
-/* Забезпечення відображення іконки телефону */
-.phone i.fas.fa-phone-alt,
-.mobile-contact-info .phone i.fas.fa-phone-alt {
-    display: inline-flex;
-    font-size: 16px;
-    color: var(--light-color);
-    visibility: visible;
-    opacity: 1;
-    width: 20px;
-    height: 20px;
-    align-items: center;
-    justify-content: center;
-}
-
 .social-icons {
   display: flex;
   gap: 10px;
